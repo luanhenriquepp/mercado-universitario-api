@@ -14,7 +14,7 @@ class UniversityController extends Controller
      */
     public function index()
     {
-        //
+        return University::paginate();
     }
 
     /**
