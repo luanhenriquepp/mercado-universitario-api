@@ -8,7 +8,7 @@ use App\User;
 class University extends Model
 {
     
-    protected $table = 'tb_universities';
+    protected $table = 'tb_university';
     protected $primaryKey = 'cd_university';
     
     protected $fillable = [

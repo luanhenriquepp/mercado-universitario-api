@@ -11,6 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        $category = new \App\Category();
+        $category->cd_category = 'SHO';
+        $category->ds_category = 'Calçados';
+        $category->save();
     }
 }

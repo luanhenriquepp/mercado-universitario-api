@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('tb_user', function (Blueprint $table) {
             $table->increments('cd_user');
             $table->string('name','255');
             $table->string('cpf', '14')->unique();
@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
                 ->unsigned();
             $table->foreign('cd_university', 'cd_university_fk')
                 ->references('cd_university')
-                ->on('tb_universities');
+                ->on('tb_university');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -38,6 +38,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('tb_user');
     }
 }

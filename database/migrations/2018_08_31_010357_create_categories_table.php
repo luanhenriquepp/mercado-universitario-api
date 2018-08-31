@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUniversitiesTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateUniversitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_university', function (Blueprint $table) {
-            $table->increments('cd_university');
-            $table->string('name','255');
-            $table->string('course','255');
+        Schema::create('tb_category', function (Blueprint $table) {
+            $table->string('cd_category',3);
+            $table->primary('cd_category');
+            $table->string('ds_category');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateUniversitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_university');
+        Schema::dropIfExists('tb_category');
     }
 }
