@@ -45,7 +45,6 @@ class UserController extends Controller
         ];
 
         $validator = Validator::make(Input::all(), $rules);
-        $foo = '';
         if ($validator->fails()){
             return response()
                     ->json($validator->errors()->toJson(), 400);
@@ -59,10 +58,10 @@ class UserController extends Controller
         
         $user = new User();
         $user->name = $request->input('name');
+        $user->birth = $request->input('birth');
         $user->cpf = $request->input('cpf');
         $user->rg = $request->input('rg');
         $user->email = $request->input('email');
-        $user->password = $request->input('password');
         $user->cd_university = $university->cd_university;
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
@@ -92,6 +91,19 @@ class UserController extends Controller
         return $dataUser;
         
         
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */public function update($id , Request $request)
+    {
+        $user  = User::find($id);
+        $user->name = $request->name;
+        $user->
+        $user->save();
+
     }
     
     public function getAuthenticatedUser()

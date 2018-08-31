@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('name','255');
             $table->string('cpf', '14')->unique();
             $table->string('rg', '14')->unique();
-            $table->dateTime('data_nacimento')->nullable();
+            $table->dateTime('birth')->nullable();
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('cd_university')
