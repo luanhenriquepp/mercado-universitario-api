@@ -43,10 +43,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:tb_user',
             'password' => 'required|max:32|min:8',
         ];
-        $message =[
-        
-        ];
-    
+
         $validator = Validator::make(Input::all(), $rules);
         
         if ($validator->fails()){

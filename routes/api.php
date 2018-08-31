@@ -23,4 +23,5 @@ Route::group(['middleware' =>
             ], function() {
     Route::get('user', 'UserController@getAuthenticatedUser');
     Route::get('users', 'UserController@index');
+    Route::resource('adversiment','AdvertisementController');
 });

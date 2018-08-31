@@ -16,15 +16,16 @@ class CreateAdvertisementsTable extends Migration
         Schema::create('tb_advertisement', function (Blueprint $table) {
             $table->increments('cd_advertisement');
             $table->string('title');
+            //$table->string('status'); implementar em um outro momento tabela de status do anuncio
             $table->text('ds_advertisement');
             $table->double('price');
             $table->integer('cd_user')->unsigned();
             $table->foreign('cd_user','cd_user_fk')
                 ->references('cd_user')
                 ->on('tb_user');
-            $table->integer('cd_category')->unsigned();
+            $table->string('cd_category');
             $table->foreign('cd_category','cd_category_fk')
-                ->references('cd_Category')
+                ->references('cd_category')
                 ->on('tb_category');
             $table->timestamps();
         });
