@@ -38,9 +38,9 @@ class UserController extends Controller
     {
         $rules = [
             'name' => 'required',
-            'cpf' => 'required|max:14|min:11|unique:users',
-            'rg' => 'required|max:14|min:5|unique:users',
-            'email' => 'required|email|unique:users',
+            'cpf' => 'required|max:14|min:11|unique:tb_user',
+            'rg' => 'required|max:14|min:5|unique:tb_user',
+            'email' => 'required|email|unique:tb_user',
             'password' => 'required|max:32|min:8',
         ];
         $message =[

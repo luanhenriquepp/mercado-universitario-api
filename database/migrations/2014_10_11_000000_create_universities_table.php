@@ -13,7 +13,7 @@ class CreateUniversitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_universities', function (Blueprint $table) {
+        Schema::create('tb_university', function (Blueprint $table) {
             $table->increments('cd_university');
             $table->string('name','255');
             $table->string('course','255');
@@ -28,6 +28,6 @@ class CreateUniversitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_universities');
+        Schema::dropIfExists('tb_university');
     }
 }
