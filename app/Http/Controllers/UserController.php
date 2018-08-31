@@ -45,7 +45,7 @@ class UserController extends Controller
         ];
 
         $validator = Validator::make(Input::all(), $rules);
-        
+        $foo = '';
         if ($validator->fails()){
             return response()
                     ->json($validator->errors()->toJson(), 400);
