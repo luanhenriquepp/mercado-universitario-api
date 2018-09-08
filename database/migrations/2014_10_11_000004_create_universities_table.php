@@ -17,6 +17,7 @@ class CreateUniversitiesTable extends Migration
             $table->increments('cd_university');
             $table->string('name','255');
             $table->string('course','255');
+            $table->string('semester');
             $table->timestamps();
         });
     }

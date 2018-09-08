@@ -37,11 +37,11 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $rules = [
-            'name' => 'required',
-            'cpf' => 'required|max:14|min:11|unique:tb_user',
-            'rg' => 'required|max:14|min:5|unique:tb_user',
-            'email' => 'required|email|unique:tb_user',
-            'password' => 'required|max:32|min:8',
+            'name'      => 'required',
+            'cpf'       => 'required|max:14|min:11|unique:tb_user',
+            'rg'        => 'required|max:14|min:5|unique:tb_user',
+            'email'     => 'required|email|unique:tb_user',
+            'password'  => 'required|max:32|min:8',
         ];
 
         $validator = Validator::make(Input::all(), $rules);
