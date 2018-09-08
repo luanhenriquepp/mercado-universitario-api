@@ -27,6 +27,10 @@ class CreateAdvertisementsTable extends Migration
             $table->foreign('cd_category','cd_category_fk')
                 ->references('cd_category')
                 ->on('tb_category');
+            $table->integer('cd_advertisement_status')->unsigned();
+            $table->foreign('cd_advertisement_status','cd_advertisement_status_fk')
+                ->references('cd_advertisement_status')
+                ->on('tb_advertisement_status');
             $table->timestamps();
         });
     }

@@ -26,6 +26,11 @@ class CreateUsersTable extends Migration
             $table->foreign('cd_university', 'cd_university_fk')
                 ->references('cd_university')
                 ->on('tb_university');
+            $table->integer('cd_address')->unsigned();
+            $table->foreign('cd_address','cd_address_fk')
+                ->references('cd_address')
+                ->on('tb_address');
+
             $table->rememberToken();
             $table->timestamps();
         });

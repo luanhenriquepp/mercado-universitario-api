@@ -22,25 +22,11 @@ class AdvertisementController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-
-
         $rules = [
             'title' => 'required|max:255|min:5',
             'ds_advertisement' => 'required|max:255|min:5',
@@ -66,46 +52,28 @@ class AdvertisementController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Advertisement  $advertisement
-     * @return \Illuminate\Http\Response
+     * @param $id
      */
-    public function show(Advertisement $advertisement)
+    public function show($id)
     {
         //
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param $id
+     * @param Request $request
      *
-     * @param  \App\Advertisement  $advertisement
-     * @return \Illuminate\Http\Response
      */
-    public function edit(Advertisement $advertisement)
+    public function update($id, Request $request)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Advertisement  $advertisement
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @param Request $request
      */
-    public function update(Request $request, Advertisement $advertisement)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Advertisement  $advertisement
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Advertisement $advertisement)
+    public function destroy($id, Request $request)
     {
         //
     }

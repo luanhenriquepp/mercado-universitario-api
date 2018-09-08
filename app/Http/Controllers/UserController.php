@@ -51,6 +51,7 @@ class UserController extends Controller
         }
         
         $university = new University();
+        $university->cd_university = University::PROJECAO;
         $university->name = 'asd';
         $university->course = 'asd';
         $university->save();

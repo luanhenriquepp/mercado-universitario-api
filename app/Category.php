@@ -11,7 +11,6 @@ class Category extends Model
     const BOOKS = 'BKS';
     const ELETRONICS = 'ELE';
 
-
     protected $table = 'tb_category';
     protected $primaryKey = 'cd_category';
     protected $keyType = 'string';
