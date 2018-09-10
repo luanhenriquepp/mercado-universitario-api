@@ -18,4 +18,11 @@ class Category extends Model
     protected $fillable = [
         'ds_category',
         ];
+    
+    /**
+     * @var array
+     */
+    protected $hidden = [
+        'created_at','updated_at'
+    ];
 }

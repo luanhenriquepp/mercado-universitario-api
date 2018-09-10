@@ -19,7 +19,9 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'tb_user';
     protected $primaryKey = 'cd_user';
     
-    
+    /**
+     * @var array
+     */
     protected $fillable = [
         'cd_university',
         'name',
@@ -27,6 +29,7 @@ class User extends Authenticatable implements JWTSubject
         'cpf',
         'email',
         'password',
+        'cd_address'
     ];
     
     /**
@@ -35,12 +38,20 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','created_at','updated_at'
     ];
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function universities()
     {
         return $this->belongsTo(University::class,'cd_university');
+    }
+    
+    public function address()
+    {
+        return $this->belongsTo(Address::class,'cd_address');
     }
     
     public function getJWTIdentifier()
@@ -52,7 +63,8 @@ class User extends Authenticatable implements JWTSubject
         return [
             'name' => $this->name,
             'cd_user' => $this->cd_user,
-            'cd_university' => $this->cd_university
+            'cd_university' => $this->cd_university,
+            'cd_address' => $this->cd_address
         ];
     }
 }
