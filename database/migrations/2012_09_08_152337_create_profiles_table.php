@@ -15,7 +15,8 @@ class CreateProfilesTable extends Migration
     {
         Schema::create('tb_profile', function (Blueprint $table) {
             $table->increments('cd_profile');
-            $table->string('ds_profile');
+            $table->string('ds_profile')
+            ->comment('Descrição do perfil');
             $table->timestamps();
         });
     }

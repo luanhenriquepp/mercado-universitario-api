@@ -34,6 +34,10 @@ class UserController extends Controller
         return response()->json(compact('token'));
     }
     
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
         $rules = [
@@ -53,6 +57,7 @@ class UserController extends Controller
         $university = new University();
         $university->cd_university = University::PROJECAO;
         $university->name = 'asd';
+        $university->semester = University::QUARTO;
         $university->course = 'asd';
         $university->save();
         
@@ -63,7 +68,7 @@ class UserController extends Controller
         $user->cpf = $request->input('cpf');
         $user->rg = $request->input('rg');
         $user->email = $request->input('email');
-        $user->cd_university = $university->cd_university;
+        $user->cd_university = University::PROJECAO;
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->save();
@@ -98,15 +103,18 @@ class UserController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */public function update($id , Request $request)
+     */
+    public function update($id , Request $request)
     {
         $user  = User::find($id);
         $user->name = $request->name;
-        $user->
         $user->save();
 
     }
     
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getAuthenticatedUser()
     {
         try {

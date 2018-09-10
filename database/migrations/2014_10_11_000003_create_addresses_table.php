@@ -15,12 +15,15 @@ class CreateAddressesTable extends Migration
     {
         Schema::create('tb_address', function (Blueprint $table) {
             $table->increments('cd_address');
-            $table->string('public_place');
+            $table->string('public_place')
+            ->comment('Logradouro do endereço');
             $table->integer('number');
             $table->string('complement');
-            $table->string('neighborhood');
+            $table->string('neighborhood')->comment('Bairro');
             $table->string('cep');
-            $table->integer('cd_city')->unsigned();
+            $table->integer('cd_city')
+                ->unsigned()
+            ->comment('Foreign key da tabela de cidades -> tb_city');
             $table->foreign('cd_city','cd_city_fk')
                 ->references('cd_city')
                 ->on('tb_city');

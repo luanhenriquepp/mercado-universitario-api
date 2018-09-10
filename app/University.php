@@ -7,7 +7,7 @@ use App\User;
 
 class University extends Model
 {
-    const PROJECAO = 'FACULDADE PROJEÇÃO';
+    const PROJECAO = 1;
     const PRIMEIRO = 'PRIMEIRO SEMESTRE';
     const SEGUNDO  = 'PRIMEIRO SEMESTRE';
     const TERCEIRO = 'TERCEIRO SEMESTRE';
@@ -25,6 +25,7 @@ class University extends Model
     protected $fillable = [
         'name',
         'course',
+        'semester'
     ];
     
     public function users() {

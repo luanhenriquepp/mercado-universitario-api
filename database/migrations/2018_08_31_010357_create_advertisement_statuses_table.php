@@ -15,7 +15,8 @@ class CreateAdvertisementStatusesTable extends Migration
     {
         Schema::create('tb_advertisement_status', function (Blueprint $table) {
             $table->increments('cd_advertisement_status');
-            $table->string('ds_advertisement_status');
+            $table->string('ds_advertisement_status')
+            ->comment('Descrição do status do anúncio');
             $table->timestamps();
         });
     }

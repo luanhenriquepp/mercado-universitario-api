@@ -15,11 +15,13 @@ class CreateUserProfilesTable extends Migration
     {
         Schema::create('tb_user_profile', function (Blueprint $table) {
             $table->increments('cd_user_profile');
-            $table->integer('cd_profile')->unsigned();
+            $table->integer('cd_profile')->unsigned()
+                ->comments('Foreign key da tabela de perfil ->tb_profile');
             $table->foreign('cd_profile','cd_profile_fk')
                 ->references('cd_profile')
                 ->on('tb_profile');
-            $table->integer('cd_user')->unsigned();
+            $table->integer('cd_user')->unsigned()
+                ->comments('Foreign key da tabela de usuario ->tb_user');
             $table->foreign('cd_user','cd_user_profile_fk')
                 ->references('cd_user')
                 ->on('tb_user');
