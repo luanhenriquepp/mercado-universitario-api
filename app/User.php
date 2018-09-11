@@ -17,6 +17,7 @@ use App\University;
  * @property array|null|string birth
  * @property array|null|string name
  * @property mixed cd_user
+ * @property array|null|string registration
  */
 class User extends Authenticatable implements JWTSubject
 {
