@@ -34,8 +34,7 @@ class UserController extends Controller
     
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {
@@ -100,8 +99,8 @@ class UserController extends Controller
             
             $token = JWTAuth::fromUser($user);
             return response()->json([
-                'access_token' => $token,
-                'token_type' => 'bearer',
+                'access_token'  => $token,
+                'token_type'    => 'bearer',
                 User::with('universities', 'address')->paginate()
             ], 201);
         } catch (\Exception $e) {
@@ -132,9 +131,9 @@ class UserController extends Controller
     }
     
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @param Request $request
+     * @return mixed
      */
     public function update($id, Request $request)
     {
