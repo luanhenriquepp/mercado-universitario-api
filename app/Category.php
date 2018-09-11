@@ -4,6 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string ds_category
+ * @property string cd_category
+ */
 class Category extends Model
 {
     const SHOES  = 'SHO';

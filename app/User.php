@@ -7,6 +7,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\University;
 
+/**
+ * @property array|null|string email
+ * @property string password
+ * @property int cd_university
+ * @property int cd_address
+ * @property array|null|string rg
+ * @property array|null|string cpf
+ * @property array|null|string birth
+ * @property array|null|string name
+ * @property mixed cd_user
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
@@ -40,7 +51,7 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password', 'remember_token','created_at','updated_at'
     ];
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

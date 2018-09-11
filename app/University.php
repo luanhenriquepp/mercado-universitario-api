@@ -5,6 +5,12 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\User;
 
+/**
+ * @property string course
+ * @property string semester
+ * @property string university_name
+ * @property int cd_university
+ */
 class University extends Model
 {
     const PROJECAO = 1;
@@ -23,7 +29,7 @@ class University extends Model
     protected $primaryKey = 'cd_university';
     
     protected $fillable = [
-        'name',
+        'university_name',
         'course',
         'semester'
     ];
@@ -34,7 +40,7 @@ class University extends Model
     protected $hidden = [
         'created_at','updated_at'
     ];
-    
+
     public function users() {
         return $this->hasMany(User::class,'','cd_university');
     }

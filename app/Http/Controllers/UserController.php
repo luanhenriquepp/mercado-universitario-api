@@ -7,14 +7,15 @@ use App\University;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Validator;
 use JWTAuth;
-use Illuminate\Support\Facades\Input;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
-    
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -22,7 +23,7 @@ class UserController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        
+
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
@@ -34,46 +35,54 @@ class UserController extends Controller
                 'error' => 'could_not_create_token'
             ], 500);
         }
-        
+
         return response()->json(compact('token'));
     }
-    
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {
-        $rules = [
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'cpf' => 'required|max:14|min:11|unique:tb_user',
             'rg' => 'required|max:14|min:5|unique:tb_user',
             'email' => 'required|email|unique:tb_user',
             'password' => 'required|max:32|min:8',
-        ];
-        
-        $validator = Validator::make(Input::all(), $rules);
-        if ($validator->fails()) {
+            'public_place' => 'required|max:255|min:10',
+            'number' => 'required|',
+            'birth' => ''
+        ])->validate();
+
+        if (!$validator) {
             return response()
-                ->json($validator->errors()->toJson(), 400);
+                ->json([
+                    'message' => $validator
+                        ->toJson()
+                    , 400]);
         }
-        
+
+
         $address = new Address();
-        $address->public_place = 'AR 23 CONJUNTO 1';
-        $address->number = '16';
-        $address->complement = 'Perto do ponto de ônibus';
-        $address->neighborhood = 'Sobradinho 2';
-        $address->cep = '73064231';
-        $address->cd_city = 2;
+        $address->cd_address = $request->input('cd_address');
+        $address->public_place = $request->input('public_place');
+        $address->number = $request->input('number');
+        $address->complement = $request->input('complement');
+        $address->neighborhood = $request->input('neighborhood');
+        $address->cep = $request->input('cep');
+        $address->cd_city = $request->input('cd_city');
         $address->save();
-        
+
         $university = new University();
-        $university->cd_university = University::PROJECAO;
-        $university->name = 'asd';
-        $university->semester = University::QUARTO;
-        $university->course = 'asd';
+        $university->cd_university = $request->input('cd_university');
+        $university->university_name = $request->input('university_name');
+        $university->semester = $request->input('semester');
+        $university->course = $request->input('course');
         $university->save();
-        
+
         $user = new User();
         $user->name = $request->input('name');
         $user->birth = $request->input('birth');
@@ -81,35 +90,38 @@ class UserController extends Controller
         $user->rg = $request->input('rg');
         $user->email = $request->input('email');
         $user->cd_address = 1;
-        $user->cd_university = University::PROJECAO;
+        $user->cd_university = $request->input('cd_university');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->save();
-        
+
         $token = JWTAuth::fromUser($user);
-        
+
         return response()->json([
-            $token
+
+            'access_token' => $token,
+            'token_type' => 'bearer',
+
         ], 201);
-        
+
     }
-    
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function index()
     {
         $user = auth()->user();
-        
+
         $dataUser = User::with('universities', 'address')->
         where('cd_user', '=', $user->cd_user)
             ->paginate();
         return $dataUser;
-        
+
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -120,44 +132,49 @@ class UserController extends Controller
         $user = User::find($id);
         $user->name = $request->name;
         $user->save();
-        
+
     }
-    
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */
     public function getAuthenticatedUser()
     {
         try {
-            
+
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json([
                     'user_not_found'
                 ], 404);
             }
-            
-        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            
-            return response()->json([
-                'token_expired'
-            ], $e->getStatusCode());
-            
+
         } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-            
+
             return response()->json([
                 'token_invalid'
             ], $e->getStatusCode());
-            
+
         } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-            
+
             return response()->json([
                 'token_absent'
             ], $e->getStatusCode());
-            
+
         }
-        
+
         return response()->json([
-            $user
+            'token' => $user,
+
         ]);
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard
+     */
+    public function guard()
+    {
+        return Auth::guard();
     }
 }

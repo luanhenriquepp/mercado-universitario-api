@@ -4,6 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string cd_category
+ * @property array|null|string price
+ * @property array|null|string ds_advertisement
+ * @property array|null|string title
+ * @property  int mixed
+ */
 class Advertisement extends Model
 {
     /**

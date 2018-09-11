@@ -4,6 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string ds_profile
+ * @property int cd_profile
+ */
 class Profile extends Model
 {
     /**

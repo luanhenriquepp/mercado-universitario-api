@@ -4,6 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int cd_city
+ * @property string cep
+ * @property string neighborhood
+ * @property string complement
+ * @property string number
+ * @property string public_place
+ * @property mixed cd_address
+ */
 class Address extends Model
 {
     

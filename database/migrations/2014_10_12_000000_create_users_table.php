@@ -33,7 +33,6 @@ class CreateUsersTable extends Migration
             $table->foreign('cd_address', 'cd_address_fk')
                 ->references('cd_address')
                 ->on('tb_address');
-            $table->rememberToken();
             $table->timestamps();
         });
     }
