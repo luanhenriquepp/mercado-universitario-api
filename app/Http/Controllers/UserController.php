@@ -115,10 +115,17 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $dataUser = User::with('universities', 'address')->
-        where('cd_user', '=', $user->cd_user)
+        if ($user == false) {
+            return response()
+                ->json([
+                    'error' => false,
+                    'message' => 'Usuário não autenticado'
+                ], 403);
+        }
+
+        $users = User::with('universities', 'address')
             ->paginate();
-        return $dataUser;
+        return $users;
 
     }
 
