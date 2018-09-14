@@ -1,0 +1,3 @@
+<html>
+{{$users}}
+</html>
