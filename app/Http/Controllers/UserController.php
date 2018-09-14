@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\Profile;
 use App\University;
 use App\User;
+use App\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Validator;
@@ -95,6 +97,11 @@ class UserController extends Controller
             $user->cd_university = $university->cd_university;
             $user->save();
 
+            $userProfile = new UserProfile();
+            $userProfile->cd_user = $user->cd_user;
+            $userProfile->cd_profile = Profile::STUDENT;
+            $userProfile->save();
+
             \DB::commit();
 
             $token = JWTAuth::fromUser($user);
@@ -103,7 +110,8 @@ class UserController extends Controller
                 'message' => 'Usuário criado com sucesso!',
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                User::with('universities', 'address')->paginate()
+                User::with('universities', 'address','userProfile')
+                    ->paginate()
             ], 201);
         } catch (\Exception $e) {
             \DB::rollback();
@@ -128,9 +136,10 @@ class UserController extends Controller
                     'message' => 'Usuário não autenticado'
                 ], 400);
         }*/
-        $users = User::with('universities', 'address')
+        $users = User::with('universities', 'address','userProfile')
             ->paginate();
-        return view('teste', compact('users'));
+        return $users;
+//        return view('teste', compact('users'));
     }
 
     /**

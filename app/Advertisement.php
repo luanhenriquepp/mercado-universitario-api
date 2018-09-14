@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array|null|string ds_advertisement
  * @property array|null|string title
  * @property  int mixed
+ * @property array|null|string cd_advertisement_status
  */
 class Advertisement extends Model
 {
@@ -33,6 +34,7 @@ class Advertisement extends Model
         'price',
         'cd_user',
         'cd_category',
+        'cd_advertisement_status'
     ];
     
     /**

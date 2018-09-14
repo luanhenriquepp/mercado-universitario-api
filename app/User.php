@@ -18,6 +18,7 @@ use App\University;
  * @property array|null|string name
  * @property mixed cd_user
  * @property array|null|string registration
+ * @property mixed cd_profile
  */
 class User extends Authenticatable implements JWTSubject
 {
@@ -36,12 +37,12 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'cd_university',
+        'cd_address',
         'name',
         'birth',
         'cpf',
         'email',
-        'password',
-        'cd_address'
+        'password'
     ];
     
     /**
@@ -60,23 +61,42 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(University::class,'cd_university');
     }
-    
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function userProfile()
+    {
+        return $this->belongsTo(UserProfile::class, 'cd_user', 'cd_user');
+    }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function address()
     {
         return $this->belongsTo(Address::class,'cd_address');
     }
-    
+
+    /**
+     * @return mixed
+     */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
+
+    /**
+     * @return array
+     */
     public function getJWTCustomClaims()
     {
         return [
             'name' => $this->name,
             'cd_user' => $this->cd_user,
+            'cd_profile'=> $this->cd_profile,
             'cd_university' => $this->cd_university,
-            'cd_address' => $this->cd_address
+            'cd_address' => $this->cd_address,
+            'cd_profile' => $this->cd_profile
         ];
     }
 }
