@@ -30,6 +30,7 @@ class UserController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            'expires_in' => '1 hora'
         ]);
     }
 
@@ -118,72 +119,68 @@ class UserController extends Controller
     }
 
 
-
-/**
- * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Http\JsonResponse
- */
-public
-function index()
-{
-    /*$user = auth()->user();
-    if ($user == false) {
-        return response()
-            ->json([
-                'success' => false,
-                'message' => 'Usuário não autenticado'
-            ], 400);
-    }*/
-    $users = User::with('universities', 'address', 'userProfile')
-        ->paginate();
-    return $users;
+    /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        /*$user = auth()->user();
+        if ($user == false) {
+            return response()
+                ->json([
+                    'success' => false,
+                    'message' => 'Usuário não autenticado'
+                ], 400);
+        }*/
+        $users = User::with('universities', 'address', 'userProfile')
+            ->paginate();
+        return $users;
 //        return view('teste', compact('users'));
-}
-
-/**
- * @param $id
- * @param Request $request
- * @return mixed
- */
-public
-function update($id, Request $request)
-{
-    $user = User::find($id);
-    $user->name = $request->name;
-    $user->save();
-    return $user;
-}
-
-/**
- * @param $id
- * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
- */
-public
-function show($id)
-{
-    $users = User::find($id);
-
-    return view('userid', compact('users'));
-}
-
-/**
- * @return \Illuminate\Http\JsonResponse
- */
-public
-function getAuthenticatedUser()
-{
-    try {
-        if ($user = JWTAuth::parseToken()->authenticate()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Dados do usuário autenticado',
-                'User' => $user
-            ], 200);
-        }
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 400);
     }
-}
+
+    /**
+     * @param $id
+     * @param Request $request
+     * @return mixed
+     */
+    public function update($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->save();
+        return $user;
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show($id)
+    {
+         $user = User::find($id);
+
+//    return view('userid', compact('users'));
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public
+    function getAuthenticatedUser()
+    {
+        try {
+            if ($user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Usuário autenticado',
+                    'data' => $user
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }
