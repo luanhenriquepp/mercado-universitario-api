@@ -24,18 +24,25 @@ class CreateUsersTable extends Migration
             $table->dateTime('birth')->nullable();
             $table->string('email')->unique();
             $table->string('password');
+
             $table->integer('cd_university')
                 ->unsigned()
                 ->comments('Foreign key da tabela de faculdades ->tb_university');
             $table->foreign('cd_university', 'cd_university_fk')
                 ->references('cd_university')
                 ->on('tb_university');
+
             $table->integer('cd_address')
                 ->unsigned()
                 ->comments('Foreign key da tabela de endereço ->tb_address');
             $table->foreign('cd_address', 'cd_address_fk')
                 ->references('cd_address')
                 ->on('tb_address');
+
+            $table->integer('cd_profile')->unsigned();
+            $table->foreign('cd_profile','cd_profile_fk')
+                ->references('cd_profile')
+                ->on('tb_profile');
             $table->timestamps();
         });
     }

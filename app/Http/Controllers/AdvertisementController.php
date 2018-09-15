@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Advertisement;
 use App\AdvertisementStatus;
+use App\Category;
 use Illuminate\Http\Request;
 use JWTAuth;
 
@@ -21,7 +22,7 @@ class AdvertisementController extends Controller
 
     /**
      * @param Request $request
-     * @return Advertisement
+     * @return Advertisement|\Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -45,7 +46,7 @@ class AdvertisementController extends Controller
         $advertisement->title = $request->input('title');
         $advertisement->ds_advertisement = $request->input('ds_advertisement');
         $advertisement->price = $request->input('price');
-        $advertisement->cd_category = $request->input('cd_category');
+        $advertisement->cd_category = $request->input('cd_category',Category::CLOTHES);
         $advertisement->cd_user = $user->cd_user;
         $advertisement->cd_advertisement_status = $request
             ->input('cd_advertisement_status',

@@ -18,7 +18,7 @@ class CategoryTableSeeder extends Seeder
         $category->save();
 
         $category = new Category();
-        $category->cd_category = Category::BOOKS;
+        $category->cd_category = Category::CLOTHES;
         $category->ds_category = 'Livros';
         $category->save();
     }

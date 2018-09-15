@@ -11,18 +11,19 @@ use Illuminate\Database\Eloquent\Model;
  * @property array|null|string title
  * @property  int mixed
  * @property array|null|string cd_advertisement_status
+ * @property  cd_user
  */
 class Advertisement extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'tb_category';
+    protected $table = 'tb_advertisement';
     
     /**
      * @var string
      */
-    protected $primaryKey = 'cd_category';
+    protected $primaryKey = 'cd_advertisement';
     
     /**
      * @var array
@@ -30,7 +31,6 @@ class Advertisement extends Model
     protected $fillable = [
         'title',
         'ds_advertisement',
-        'status',
         'price',
         'cd_user',
         'cd_category',

@@ -42,7 +42,8 @@ class User extends Authenticatable implements JWTSubject
         'birth',
         'cpf',
         'email',
-        'password'
+        'password',
+        'cd_profile'
     ];
     
     /**
@@ -65,18 +66,15 @@ class User extends Authenticatable implements JWTSubject
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function userProfile()
-    {
-        return $this->belongsTo(UserProfile::class, 'cd_user', 'cd_user');
-    }
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function address()
     {
         return $this->belongsTo(Address::class,'cd_address');
     }
 
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class,'cd_profile');
+    }
     /**
      * @return mixed
      */
