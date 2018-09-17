@@ -40,6 +40,7 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
+
         $validator = $request->validate([
             'name' => 'required|max:255|min:3',
             'registration' => 'required|unique:tb_user|max:32|min:4',
@@ -91,7 +92,6 @@ class UserController extends Controller
             $user->cpf = $request->input('cpf');
             $user->rg = $request->input('rg');
             $user->email = $request->input('email');
-            $user->email = $request->input('email');
             $user->password = Hash::make($request->input('password'));
             $user->cd_address = $address->cd_address;
             $user->cd_university = $university->cd_university;
@@ -110,56 +110,76 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Usuário criado com sucesso!',
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            User::with('universities', 'address', 'profile')
-                ->paginate()
         ], 201);
 
     }
-
 
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        /*$user = auth()->user();
+        $user = auth()->user();
         if ($user == false) {
             return response()
                 ->json([
                     'success' => false,
                     'message' => 'Usuário não autenticado'
                 ], 400);
-        }*/
-        $users = User::with('universities', 'address', 'userProfile')
+        }
+        return $users = User::with('universities', 'address', 'profile')
             ->paginate();
-        return $users;
-//        return view('teste', compact('users'));
     }
 
     /**
      * @param $id
      * @param Request $request
-     * @return mixed
+     * @return array
      */
     public function update($id, Request $request)
     {
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->save();
-        return $user;
+        $response = [
+            'success' => false,
+            'message' => 'Não foi possível atualizar os dados do usuário!'
+        ];
+
+        $user = User::with('universities', 'address', 'profile')->find($id);
+
+        $address = $user->address;
+        $address->public_place = $request->input('public_place');
+        $address->number = $request->input('number');
+        $address->complement = $request->input('complement');
+        $address->neighborhood = $request->input('neighborhood');
+        $address->cep = $request->input('cep');
+        $address->cd_city = $request->input('cd_city');
+
+
+        $university = $user->universities;
+        $university->university_name = $request->input('university_name');
+        $university->semester = $request->input('semester');
+        $university->course = $request->input('course');
+
+
+        $user->name = $request->input('name');
+        $user->password = Hash::make($request->input('password'));
+
+        if ($user->save() && $university->save() && $address->save() ) {
+            $response = [
+                'success' => true,
+                'message' => 'Dados do usuário atualizados com sucesso!'
+            ];
+        }
+        return $response;
     }
 
     /**
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return User|User[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      */
     public function show($id)
     {
-         $user = User::find($id);
+        return $user = User::with('universities', 'address', 'profile')->find($id);
 
-//    return view('userid', compact('users'));
     }
 
     /**
@@ -172,7 +192,6 @@ class UserController extends Controller
             if ($user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Usuário autenticado',
                     'data' => $user
                 ], 200);
             }
@@ -182,5 +201,9 @@ class UserController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+        return response()->json([
+            'success' => false,
+            'message' => 'Ocorreu um erro inesperado'
+        ], 500);
     }
 }

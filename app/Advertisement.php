@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property array|null|string title
  * @property  int mixed
  * @property array|null|string cd_advertisement_status
- * @property  cd_user
  */
 class Advertisement extends Model
 {

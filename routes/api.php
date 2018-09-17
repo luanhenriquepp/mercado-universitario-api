@@ -15,13 +15,13 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
-Route::get('users/{id}','UserController@show');
+
 
 Route::group(['middleware' =>
                  ['jwt.verify']
             ], function() {
-    Route::get('authenticate_user', 'UserController@getAuthenticatedUser');
-    Route::put('user/{id}','UserController@update');
-    Route::get('users','UserController@index');
+
+
+    Route::resource('users','UserController');
     Route::resource('advertisement','AdvertisementController');
 });
