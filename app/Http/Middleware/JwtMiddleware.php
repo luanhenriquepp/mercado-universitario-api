@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Response;
 use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
@@ -26,17 +27,17 @@ class JwtMiddleware extends BaseMiddleware
                 return response()->json([
                     'success' => false,
                     'status' => 'Token inválido'
-                ],400);
+                ],Response::HTTP_BAD_REQUEST);
             } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
                 return response()->json([
                     'success' => false,
                     'status' => 'Token expirado'
-                ],400);
+                ],Response::HTTP_BAD_REQUEST);
             } else {
                 return response()->json([
                     'success' => false,
                     'message' => 'Token não encontrado'
-                ],400);
+                ],Response::HTTP_BAD_REQUEST);
             }
         }
         return $next($request);

@@ -6,6 +6,7 @@ use App\Advertisement;
 use App\AdvertisementStatus;
 use App\Category;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use JWTAuth;
 
 
@@ -22,12 +23,10 @@ class AdvertisementController extends Controller
                 [
                     'success' => false,
                     'message' => 'Usuário não autenticado',
-                ], 400);
+                ], Response::HTTP_BAD_REQUEST);
         }
 
-        $advertisement = Advertisement::where('cd_user', $user->cd_user)
-            ->paginate();
-
+        $advertisement = Advertisement::where('cd_user', $user->cd_user)->paginate();
         return $advertisement;
     }
 
@@ -49,7 +48,7 @@ class AdvertisementController extends Controller
                     'success' => false,
                     'message' => $validator
                         ->toJson()
-                ], 400);
+                ], Response::HTTP_BAD_REQUEST);
         }
 
         $user = auth()->user();
@@ -66,7 +65,7 @@ class AdvertisementController extends Controller
                 'success'   => true,
                 'message'   => 'Anúncio cadastrado com sucesso',
                 'data'      => $advertisement,
-            ], 200);
+            ], Response::HTTP_CREATED);
     }
 
     /**
@@ -75,13 +74,14 @@ class AdvertisementController extends Controller
      */
     public function show($id)
     {
+        //Implementar se o anúncio pertence ao usuário autenticado
         $user = auth()->user();
 
         if ($user == null || $user == false) {
             return response()->json([
                 'success' => false,
                 'message' => 'Usuário não autenticado'
-            ], 400);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $advertisement = Advertisement::find($id);
@@ -101,7 +101,7 @@ class AdvertisementController extends Controller
         return response()->json([
             'sucess' => true,
             'message' => 'Anúncio atualizado com sucesso'
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -115,7 +115,7 @@ class AdvertisementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Anúncio deletado com sucesso'
-        ], 201);
+        ], Response::HTTP_OK);
 
     }
 }

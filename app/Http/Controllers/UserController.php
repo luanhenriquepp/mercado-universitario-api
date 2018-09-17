@@ -7,7 +7,7 @@ use App\Profile;
 use App\University;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Response;
 use Validator;
 use JWTAuth;
 
@@ -25,13 +25,13 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Mátricula ou senha inválidos.'
-            ], 400);
+            ], Response::HTTP_BAD_REQUEST);
         }
         return response()->json([
             'access_token'  => $token,
             'token_type'    => 'bearer',
             'expires_in'    => '1 hora'
-        ]);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -102,7 +102,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Usuário criado com sucesso!',
-        ], 201);
+        ], Response::HTTP_CREATED);
 
     }
 
@@ -117,7 +117,7 @@ class UserController extends Controller
                 ->json([
                     'success' => false,
                     'message' => 'Usuário não autenticado'
-                ], 400);
+                ], Response::HTTP_UNAUTHORIZED);
         }
         return $users = User::with('universities', 'address', 'profile')
             ->paginate();
@@ -171,7 +171,7 @@ class UserController extends Controller
         if ($user->save() && $university->save() && $address->save()) {
             $response = [
                 'success' => true,
-                'message' => 'Dados do usuário atualizados com sucesso!'
+                'message' => 'Dados do usuário foram atualizados com sucesso!'
             ];
         }
         return $response;
@@ -197,17 +197,17 @@ class UserController extends Controller
                 return response()->json([
                     'success'   => true,
                     'data'      => $user
-                ], 200);
+                ], Response::HTTP_OK);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
-            ], 400);
+            ], Response::HTTP_NOT_FOUND);
         }
         return response()->json([
             'success' => false,
             'message' => 'Ocorreu um erro inesperado'
-        ], 500);
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
