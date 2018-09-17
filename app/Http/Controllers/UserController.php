@@ -41,7 +41,7 @@ class UserController extends Controller
     public function register(Request $request)
     {
 
-        $validator = $request->validate([
+         $request->validate([
             'name' => 'required|max:255|min:3',
             'registration' => 'required|unique:tb_user|max:32|min:4',
             'cpf' => 'required|max:14|min:11|unique:tb_user',
@@ -58,15 +58,6 @@ class UserController extends Controller
             'course' => 'required|max:255|min:2',
             'semester' => 'required|max:100|min:2',
         ]);
-
-        if (!$validator) {
-            return response()
-                ->json([
-                    'success' => false,
-                    'message' => $validator
-                        ->toJson()
-                ], 400);
-        }
 
         \DB::beginTransaction();
         try {
@@ -106,7 +97,7 @@ class UserController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
-        $token = JWTAuth::fromUser($user);
+        JWTAuth::fromUser($user);
         return response()->json([
             'success' => true,
             'message' => 'Usuário criado com sucesso!',
@@ -132,16 +123,29 @@ class UserController extends Controller
     }
 
     /**
-     * @param $id
      * @param Request $request
+     * @param $id
      * @return array
      */
-    public function update($id, Request $request)
+    public function update(Request $request, $id)
     {
         $response = [
             'success' => false,
             'message' => 'Não foi possível atualizar os dados do usuário!'
         ];
+
+        $request->validate([
+            'name' => 'required|max:255|min:3',
+            'password' => 'required|max:32|min:8',
+            'public_place' => 'required|max:255|min:10',
+            'number' => 'required',
+            'complement' => 'max:255',
+            'neighborhood' => 'required|max:255|min:5',
+            'cep' => 'required|max:20|min:5',
+            'university_name' => 'required|max:255|min:3',
+            'course' => 'required|max:255|min:2',
+            'semester' => 'required|max:100|min:2',
+        ]);
 
         $user = User::with('universities', 'address', 'profile')->find($id);
 
@@ -153,17 +157,15 @@ class UserController extends Controller
         $address->cep = $request->input('cep');
         $address->cd_city = $request->input('cd_city');
 
-
         $university = $user->universities;
         $university->university_name = $request->input('university_name');
         $university->semester = $request->input('semester');
         $university->course = $request->input('course');
 
-
         $user->name = $request->input('name');
         $user->password = Hash::make($request->input('password'));
 
-        if ($user->save() && $university->save() && $address->save() ) {
+        if ($user->save() && $university->save() && $address->save()) {
             $response = [
                 'success' => true,
                 'message' => 'Dados do usuário atualizados com sucesso!'
@@ -185,8 +187,7 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public
-    function getAuthenticatedUser()
+    public function getAuthenticatedUser()
     {
         try {
             if ($user = JWTAuth::parseToken()->authenticate()) {
