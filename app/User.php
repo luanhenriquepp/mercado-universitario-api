@@ -46,15 +46,21 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'cd_profile'
     ];
-    
+
     /**
-     * The attributes that should be hidden for arrays.
-     *
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token','created_at','updated_at'
+        'password', 'remember_token', 'created_at', 'updated_at', 'password_confirmation'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function advertisement()
+    {
+        return $this->hasMany(Advertisement::class);
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -72,10 +78,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Address::class,'cd_address');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function profile()
     {
         return $this->belongsTo(Profile::class,'cd_profile');
     }
+
     /**
      * @return mixed
      */

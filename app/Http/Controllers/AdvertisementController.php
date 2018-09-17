@@ -70,7 +70,7 @@ class AdvertisementController extends Controller
 
     /**
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return Advertisement|Advertisement[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Http\JsonResponse|null
      */
     public function show($id)
     {
@@ -84,8 +84,8 @@ class AdvertisementController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $advertisement = Advertisement::find($id);
-        return $advertisement;
+        return $advertisement = Advertisement::with('user')->find($id);
+
     }
 
     /**
