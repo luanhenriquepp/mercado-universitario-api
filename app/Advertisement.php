@@ -47,4 +47,14 @@ class Advertisement extends Model
     {
         return $this->belongsTo(User::class,'cd_user');
     }
+
+    public function category()
+    {
+        return $this->hasOne(Category::class,'cd_category');
+    }
+
+    public function advertisement_status()
+    {
+        return $this->belongsTo(AdvertisementStatus::class,'cd_advertisement_status');
+    }
 }

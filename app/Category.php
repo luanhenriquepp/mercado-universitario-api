@@ -26,4 +26,9 @@ class Category extends Model
     protected $hidden = [
         'created_at','updated_at'
     ];
+
+    public function advertisement()
+    {
+        return $this->hasMany(Advertisement::class);
+    }
 }

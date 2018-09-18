@@ -26,7 +26,8 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
-        $advertisement = Advertisement::where('cd_user', $user->cd_user)->paginate();
+        $advertisement = Advertisement::with('user','category','advertisement_status')
+            -> where('cd_user', $user->cd_user)->paginate();
         return $advertisement;
     }
 

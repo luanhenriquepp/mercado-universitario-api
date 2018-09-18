@@ -23,4 +23,13 @@ class AdvertisementStatus extends Model
         'cd_advertisement_status',
         'ds_advertisement_status'
     ];
+
+    protected $hidden = [
+        'created_at','updated_at'
+    ];
+
+    public function advertisement()
+    {
+        return $this->hasMany(Advertisement::class);
+    }
 }
