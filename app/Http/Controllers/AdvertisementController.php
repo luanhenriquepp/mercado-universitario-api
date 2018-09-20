@@ -52,13 +52,13 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = auth()->user();
+
         $advertisement = new Advertisement();
         $advertisement->title                   = $request->input('title');
         $advertisement->ds_advertisement        = $request->input('ds_advertisement');
         $advertisement->price                   = $request->input('price');
         $advertisement->cd_category             = $request->input('cd_category', Category::CLOTHES);
-        $advertisement->cd_user                 = $user->cd_user;
+        $advertisement->cd_user                 = auth()->user()->cd_user;
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status', AdvertisementStatus::AWAITINGAPPROVAL);
         $advertisement->save();
         return response()->json(

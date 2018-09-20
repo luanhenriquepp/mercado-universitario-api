@@ -15,10 +15,10 @@ class CreateAdvertisementsTable extends Migration
     {
         Schema::create('tb_advertisement', function (Blueprint $table) {
             $table->increments('cd_advertisement');
+            $table->string('advertisement_photo');
             $table->string('title');
             $table->string('ds_advertisement');
             $table->double('price');
-
             $table->integer('cd_user')->unsigned()
                 ->comments('Foreign key da tabela de usuários ->tb_user');
             $table->foreign('cd_user','cd_user_fk')
