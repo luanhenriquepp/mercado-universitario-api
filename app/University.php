@@ -10,6 +10,7 @@ use App\User;
  * @property string semester
  * @property string university_name
  * @property int cd_university
+ * @method save()
  */
 class University extends Model
 {

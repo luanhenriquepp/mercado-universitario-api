@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\University;
 
 /**
  * @property array|null|string email
@@ -20,6 +19,8 @@ use App\University;
  * @property array|null|string registration
  * @property mixed cd_profile
  * @property string password_confirmation
+ * @property array|null|string user_photo
+ * @method save()
  */
 class User extends Authenticatable implements JWTSubject
 {
@@ -39,6 +40,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'cd_university',
         'cd_address',
+        'user_photo',
         'name',
         'birth',
         'cpf',

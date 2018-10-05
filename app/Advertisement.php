@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array|null|string title
  * @property  int mixed
  * @property array|null|string cd_advertisement_status
+ * @property array|null|string advertisement_photo
  */
 class Advertisement extends Model
 {
@@ -57,4 +58,12 @@ class Advertisement extends Model
     {
         return $this->belongsTo(AdvertisementStatus::class,'cd_advertisement_status');
     }
+
+    public function hasFile($key)
+    {
+        if (is_array($file = $this->file($key))) $file = head($file);
+
+        return $file instanceof \SplFileInfo;
+    }
+
 }

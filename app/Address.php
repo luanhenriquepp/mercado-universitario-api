@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string number
  * @property string public_place
  * @property mixed cd_address
+ * @method save()
  */
 class Address extends Model
 {

@@ -17,11 +17,8 @@ Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
 
 
-Route::group(['middleware' =>
-                 ['jwt.verify']
-            ], function() {
-
-
+Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::get('category', 'CategoryController@index');
     Route::resource('users','UserController');
     Route::resource('advertisement','AdvertisementController');
 });

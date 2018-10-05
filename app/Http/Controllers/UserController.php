@@ -28,9 +28,9 @@ class UserController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
         return response()->json([
-            'access_token'  => $token,
             'token_type'    => 'bearer',
-            'expires_in'    => '1 hora'
+            'access_token'  => $token,
+            'expires_in'    =>  env('JWT_TTL', 60 .' minutes')
         ], Response::HTTP_OK);
     }
 
@@ -82,6 +82,7 @@ class UserController extends Controller
             $user->registration             = $request->input('registration');
             $user->cpf                      = $request->input('cpf');
             $user->rg                       = $request->input('rg');
+            $user->user_photo               = $request->input('user_photo');
             $user->email                    = $request->input('email');
             $user->password                 = bcrypt($request->input('password'));
             $user->password_confirmation    = bcrypt($request->input('password_confirmation'));
