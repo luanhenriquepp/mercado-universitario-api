@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
 use JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -30,7 +31,7 @@ class UserController extends Controller
         return response()->json([
             'token_type'    => 'bearer',
             'access_token'  => $token,
-            'expires_in'    =>  env('JWT_TTL', 60 .' minutes')
+            'expires_in' => auth('api')->factory()->getTTL() * 60
         ], Response::HTTP_OK);
     }
 
@@ -97,7 +98,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
-            ], 400);
+            ],Response::HTTP_BAD_REQUEST);
         }
         JWTAuth::fromUser($user);
         return response()->json([

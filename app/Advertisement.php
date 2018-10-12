@@ -24,7 +24,7 @@ class Advertisement extends Model
      * @var string
      */
     protected $primaryKey = 'cd_advertisement';
-    
+
     /**
      * @var array
      */
@@ -51,19 +51,11 @@ class Advertisement extends Model
 
     public function category()
     {
-        return $this->hasOne(Category::class,'cd_category');
+        return $this->belongsTo(Category::class,'cd_category');
     }
 
     public function advertisement_status()
     {
         return $this->belongsTo(AdvertisementStatus::class,'cd_advertisement_status');
     }
-
-    public function hasFile($key)
-    {
-        if (is_array($file = $this->file($key))) $file = head($file);
-
-        return $file instanceof \SplFileInfo;
-    }
-
 }

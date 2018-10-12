@@ -10,8 +10,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Category extends Model
 {
-    const SHOES  = 1;
-    const CLOTHES = 2;
+
+    const FASHION = 1;
+
+    const ELECTRONICS = 2;
+    const DOMESTIC = 3;
+    const SERVICES = 4;
+    const MUSIC = 5;
+    const CHILDREN = 6;
+    const SPORTS = 7;
+    const ANIMALS = 8;
+    const BOOKS = 9;
+
 
     protected $table = 'tb_category';
     protected $primaryKey = 'cd_category';
