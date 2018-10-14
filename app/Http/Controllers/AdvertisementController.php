@@ -55,7 +55,6 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
-
         $advertisement = new Advertisement();
         $advertisement->title = $request->input('title');
         $advertisement->ds_advertisement = $request->input('ds_advertisement');
