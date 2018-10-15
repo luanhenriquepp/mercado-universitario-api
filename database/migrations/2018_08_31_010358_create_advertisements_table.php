@@ -15,7 +15,7 @@ class CreateAdvertisementsTable extends Migration
     {
         Schema::create('tb_advertisement', function (Blueprint $table) {
             $table->increments('cd_advertisement');
-            $table->string('advertisement_photo');
+            $table->longText('advertisement_photo');
             $table->string('title');
             $table->string('ds_advertisement');
             $table->double('price');

@@ -10,7 +10,7 @@ class FilesController extends Controller
 
     public function show($filename)
     {
-        $path = storage_path('app\\advertisement\\' . $filename);
+        $path = storage_path('app/advertisement/' . $filename);
         if (!File::exists($path)) {
             abort(404);
         }

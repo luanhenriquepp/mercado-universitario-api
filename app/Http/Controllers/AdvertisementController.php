@@ -32,10 +32,10 @@ class AdvertisementController extends Controller
         $advertisements = Advertisement::with('user', 'category', 'advertisement_status')
             ->where('cd_user', $user->cd_user)->paginate();
 
-        foreach ($advertisements as $advertisement) {
+       /* foreach ($advertisements as $advertisement) {
             $image = explode('/', $advertisement->advertisement_photo)[1];
             $advertisement->advertisement_photo = env('API_HOST') . '/storage/' . $image;
-        }
+        }*/
         return $advertisements;
     }
 
@@ -65,7 +65,8 @@ class AdvertisementController extends Controller
         $advertisement->title = $request->input('title');
         $advertisement->ds_advertisement = $request->input('ds_advertisement');
         $advertisement->price = $request->input('price');
-        $advertisement->advertisement_photo = $request->file('advertisement_photo')->store('advertisement');
+        $advertisement->advertisement_photo = base64_encode(file_get_contents($request->file('advertisement_photo')
+            ->path()));
         $advertisement->cd_category = $request->input('cd_category');
         $advertisement->cd_user = auth()->user()->cd_user;
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
@@ -74,8 +75,7 @@ class AdvertisementController extends Controller
         return response()->json(
             [
                 'success' => true,
-                'message' => 'Anúncio cadastrado com sucesso!',
-                'data' => $advertisement,
+                'message' => 'Anúncio cadastrado com sucesso!'
             ], Response::HTTP_CREATED);
     }
 

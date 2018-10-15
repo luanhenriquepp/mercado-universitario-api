@@ -17,10 +17,13 @@ Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
 Route::get('storage/{filename}', function ($filename)
 {
-    $path = storage_path('app\\advertisement\\' . $filename);
+    $path = storage_path('app/advertisement/' . $filename);
+
     if (!File::exists($path)) {
+
         abort(404);
     }
+
     $file = File::get($path);
     $type = File::mimeType($path);
     $response = Response::make($file, 200);
