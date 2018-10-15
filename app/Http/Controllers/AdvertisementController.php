@@ -8,6 +8,7 @@ use App\Category;
 use Faker\Provider\Image;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use JWTAuth;
 
@@ -28,9 +29,14 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
-        $advertisement = Advertisement::with('user', 'category', 'advertisement_status')
+        $advertisements = Advertisement::with('user', 'category', 'advertisement_status')
             ->where('cd_user', $user->cd_user)->paginate();
-        return $advertisement;
+
+        foreach ($advertisements as $advertisement) {
+            $image = explode('/', $advertisement->advertisement_photo)[1];
+            $advertisement->advertisement_photo = env('API_HOST') . '/storage/' . $image;
+        }
+        return $advertisements;
     }
 
     /**
@@ -59,7 +65,7 @@ class AdvertisementController extends Controller
         $advertisement->title = $request->input('title');
         $advertisement->ds_advertisement = $request->input('ds_advertisement');
         $advertisement->price = $request->input('price');
-        $advertisement->advertisement_photo = $request->input('advertisement_photo');
+        $advertisement->advertisement_photo = $request->file('advertisement_photo')->store('advertisement');
         $advertisement->cd_category = $request->input('cd_category');
         $advertisement->cd_user = auth()->user()->cd_user;
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
