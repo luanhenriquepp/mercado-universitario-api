@@ -34,14 +34,16 @@ class Advertisement extends Model
         'price',
         'cd_user',
         'cd_category',
-        'cd_advertisement_status'
+        'cd_advertisement_status',
+        'advertisement_photo',
+        'cd_address'
     ];
     
     /**
      * @var array
      */
     protected $hidden = [
-        'created_at','updated_at'
+        'created_at','updated_at', 'advertisement_photo'
     ];
 
     public function user()
@@ -58,4 +60,14 @@ class Advertisement extends Model
     {
         return $this->belongsTo(AdvertisementStatus::class,'cd_advertisement_status');
     }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class,'cd_address','cd_address');
+    }
+
+   /* public function advertisement_file()
+    {
+        return $this->belongsTo(AdvertisementFile::class,'cd_advertisement_file','cd_advertisement_file');
+    }*/
 }

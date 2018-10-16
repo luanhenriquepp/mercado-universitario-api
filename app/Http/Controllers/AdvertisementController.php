@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Advertisement;
+use App\AdvertisementFile;
 use App\AdvertisementStatus;
 use App\Category;
 use Faker\Provider\Image;
@@ -29,13 +30,9 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
-        $advertisements = Advertisement::with('user', 'category', 'advertisement_status')
+        $advertisements = Advertisement::with('user', 'category', 'advertisement_status','address')
             ->where('cd_user', $user->cd_user)->paginate();
 
-       /* foreach ($advertisements as $advertisement) {
-            $image = explode('/', $advertisement->advertisement_photo)[1];
-            $advertisement->advertisement_photo = env('API_HOST') . '/storage/' . $image;
-        }*/
         return $advertisements;
     }
 
@@ -61,17 +58,20 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
+
         $advertisement = new Advertisement();
         $advertisement->title = $request->input('title');
         $advertisement->ds_advertisement = $request->input('ds_advertisement');
         $advertisement->price = $request->input('price');
-        $advertisement->advertisement_photo = base64_encode(file_get_contents($request->file('advertisement_photo')
-            ->path()));
+        $advertisement->advertisement_photo = $request->input('advertisement_photo');
         $advertisement->cd_category = $request->input('cd_category');
         $advertisement->cd_user = auth()->user()->cd_user;
+        $advertisement->cd_address = auth()->user()->cd_address;
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
             AdvertisementStatus::AWAITINGAPPROVAL);
         $advertisement->save();
+
+
         return response()->json(
             [
                 'success' => true,

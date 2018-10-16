@@ -15,15 +15,22 @@ class CreateAdvertisementsTable extends Migration
     {
         Schema::create('tb_advertisement', function (Blueprint $table) {
             $table->increments('cd_advertisement');
-            $table->longText('advertisement_photo');
             $table->string('title');
             $table->string('ds_advertisement');
             $table->double('price');
+            $table->longText('advertisement_photo');
             $table->integer('cd_user')->unsigned()
                 ->comments('Foreign key da tabela de usuários ->tb_user');
             $table->foreign('cd_user','cd_user_fk')
                 ->references('cd_user')
                 ->on('tb_user');
+
+            $table->integer('cd_address')
+                ->unsigned()
+                ->comments('Foreign key da tabela de endereço ->tb_address');
+            $table->foreign('cd_address')
+                ->references('cd_address')
+                ->on('tb_address');
 
 
             $table->integer('cd_category')->unsigned();
@@ -36,6 +43,7 @@ class CreateAdvertisementsTable extends Migration
             $table->foreign('cd_advertisement_status','cd_advertisement_status_fk')
                 ->references('cd_advertisement_status')
                 ->on('tb_advertisement_status');
+
 
             $table->timestamps();
         });

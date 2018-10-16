@@ -40,4 +40,9 @@ class Address extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function advertisement_address()
+    {
+        return $this->belongsTo(Advertisement::class,'cd_address');
+    }
 }

@@ -31,8 +31,6 @@ Route::get('storage/{filename}', function ($filename)
 
     return $response;
 });
-
-
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('category', 'CategoryController@index');
     Route::resource('users','UserController');
