@@ -43,7 +43,7 @@ class Advertisement extends Model
      * @var array
      */
     protected $hidden = [
-        'created_at','updated_at', 'advertisement_photo'
+        'created_at','updated_at'
     ];
 
     public function user()
