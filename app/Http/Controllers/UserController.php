@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Validator;
 use JWTAuth;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -22,7 +21,9 @@ class UserController extends Controller
     {
         $credentials = $request->only('registration', 'password');
 
+
         if (!$token = JWTAuth::attempt($credentials)) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Mátricula ou senha inválidos.'

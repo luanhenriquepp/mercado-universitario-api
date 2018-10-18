@@ -46,7 +46,8 @@ class User extends Authenticatable implements JWTSubject
         'cpf',
         'email',
         'password',
-        'cd_profile'
+        'cd_profile',
+        'roles'
     ];
 
     /**
@@ -104,10 +105,9 @@ class User extends Authenticatable implements JWTSubject
         return [
             'name' => $this->name,
             'cd_user' => $this->cd_user,
-            'cd_profile'=> $this->cd_profile,
             'cd_university' => $this->cd_university,
             'cd_address' => $this->cd_address,
-            'cd_profile' => $this->cd_profile
+            'roles' => [$this->cd_profile]
         ];
     }
 }
