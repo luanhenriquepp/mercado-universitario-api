@@ -14,6 +14,7 @@ use JWTAuth;
 class UserController extends Controller
 {
     /**
+     * Método que autentica o usuário
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -29,14 +30,12 @@ class UserController extends Controller
                 'message' => 'Mátricula ou senha inválidos.'
             ], Response::HTTP_BAD_REQUEST);
         }
-        return response()->json([
-            'token_type'    => 'bearer',
-            'access_token'  => $token,
-            'expires_in' => auth('api')->factory()->getTTL() * 60
-        ], Response::HTTP_OK);
+
+        return $this->respondWithToken($token);
     }
 
     /**
+     * Método que registra um novo usuário
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -92,7 +91,7 @@ class UserController extends Controller
             $user->cd_university            = $university->cd_university;
             $user->cd_profile               = $request->input('cd_profile', Profile::STUDENT);
             $user->save();
-            
+
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -110,6 +109,7 @@ class UserController extends Controller
     }
 
     /**
+     * Mostra todos os usuários do sistema
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Http\JsonResponse
      */
     public function index()
@@ -127,17 +127,24 @@ class UserController extends Controller
     }
 
     /**
+     * Pega usuário por ID
+     * @param $id
+     * @return User|User[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     */
+    public function show($id)
+    {
+        return $user = User::with('universities', 'address', 'profile')->find($id);
+
+    }
+
+    /**
+     * Método que atualiza os dados do usuário
      * @param Request $request
      * @param $id
      * @return array
      */
     public function update(Request $request, $id)
     {
-        $response = [
-            'success' => false,
-            'message' => 'Não foi possível atualizar os dados do usuário!'
-        ];
-
         $request->validate([
             'name'                  => 'required|max:255|min:3',
             'password'              => 'required|max:32|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
@@ -172,25 +179,20 @@ class UserController extends Controller
         $user->password_confirmation    = bcrypt($request->input('password'));
 
         if ($user->save() && $university->save() && $address->save()) {
-            $response = [
+            return response()->json([
                 'success' => true,
                 'message' => 'Dados do usuário foram atualizados com sucesso!'
-            ];
+            ], Response::HTTP_OK);
         }
-        return $response;
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Não foi possível atualizar os dados do usuário!'
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
-     * @param $id
-     * @return User|User[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
-     */
-    public function show($id)
-    {
-        return $user = User::with('universities', 'address', 'profile')->find($id);
-
-    }
-
-    /**
+     * Método que pega o usuário autenticado
      * @return \Illuminate\Http\JsonResponse
      */
     public function getAuthenticatedUser()
@@ -212,5 +214,26 @@ class UserController extends Controller
             'success' => false,
             'message' => 'Ocorreu um erro inesperado'
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Método que gera o token
+     * @param $token
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        if ($token){
+            return response()->json([
+                'access_token'  => $token,
+                'token_type'    => 'bearer',
+                'expires_in'    => auth('api')->factory()->getTTL() * 60
+            ], Response::HTTP_OK);
+        }
+
+        return response()->json([
+            'success'   => false,
+            'message'   => 'Ocorreu um erro ao gerar o token!'
+        ], Response::HTTP_BAD_REQUEST);
     }
 }

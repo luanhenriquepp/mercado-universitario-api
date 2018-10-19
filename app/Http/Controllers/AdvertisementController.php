@@ -43,10 +43,10 @@ class AdvertisementController extends Controller
     public function store(Request $request)
     {
         $validator = $request->validate([
-            'title'            => 'required|max:255|min:5',
-            'ds_advertisement' => 'required|max:255|min:32',
-            'price'            => 'required',
-            'cd_category'      => 'required'
+            'title'                 => 'required|max:255|min:5',
+            'ds_advertisement'      => 'required|max:255|min:32',
+            'price'                 => 'required',
+            'cd_category'           => 'required'
         ]);
 
         if (!$validator) {
@@ -58,25 +58,29 @@ class AdvertisementController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
         }
 
-
         $advertisement = new Advertisement();
-        $advertisement->title = $request->input('title');
-        $advertisement->ds_advertisement = $request->input('ds_advertisement');
-        $advertisement->price = $request->input('price');
-        $advertisement->advertisement_photo = $request->input('advertisement_photo');
-        $advertisement->cd_category = $request->input('cd_category');
-        $advertisement->cd_user = auth()->user()->cd_user;
-        $advertisement->cd_address = auth()->user()->cd_address;
+        $advertisement->title                   = $request->input('title');
+        $advertisement->ds_advertisement        = $request->input('ds_advertisement');
+        $advertisement->price                   = $request->input('price');
+        $advertisement->advertisement_photo     = $request->input('advertisement_photo', null);
+        $advertisement->cd_category             = $request->input('cd_category');
+        $advertisement->cd_user                 = auth()->user()->cd_user;
+        $advertisement->cd_address              = auth()->user()->cd_address;
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
             AdvertisementStatus::AWAITINGAPPROVAL);
-        $advertisement->save();
 
+        if ($advertisement->save()){
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Anúncio cadastrado com sucesso!'
+                ], Response::HTTP_CREATED);
+        }
 
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Anúncio cadastrado com sucesso!'
-            ], Response::HTTP_CREATED);
+        return response()->json([
+            'success'   => false,
+            'message'   => 'Ocorreu um erro no cadastro do anúncio!'
+        ], Response::HTTP_BAD_REQUEST);
     }
 
 
@@ -108,12 +112,18 @@ class AdvertisementController extends Controller
     public function update($id, Request $request)
     {
         $advertisement = Advertisement::find($id);
-        $advertisement->update($request->all());
+
+        if ($advertisement->update($request->all())){
+            return response()->json([
+                'sucess'    => true,
+                'message'   => 'Anúncio atualizado com sucesso!'
+            ], Response::HTTP_OK);
+        }
 
         return response()->json([
-            'sucess' => true,
-            'message' => 'Anúncio atualizado com sucesso'
-        ], Response::HTTP_OK);
+            'success'   => false,
+            'message'   => 'Não foi possível atualizar o anúncio!'
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -127,7 +137,7 @@ class AdvertisementController extends Controller
         if ($advertisement->delete()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Anúncio excluído com sucesso'
+                'message' => 'Anúncio excluído com sucesso!'
             ], Response::HTTP_OK);
         }
 
@@ -135,7 +145,5 @@ class AdvertisementController extends Controller
             'false' => false,
             'message'=> 'Não foi possível excluir o anúncio!'
         ], Response::HTTP_FORBIDDEN);
-
-
     }
 }

@@ -18,7 +18,7 @@ class CreateAdvertisementsTable extends Migration
             $table->string('title');
             $table->string('ds_advertisement');
             $table->double('price');
-            $table->longText('advertisement_photo');
+            $table->longText('advertisement_photo')->nullable();
             $table->integer('cd_user')->unsigned()
                 ->comments('Foreign key da tabela de usuários ->tb_user');
             $table->foreign('cd_user','cd_user_fk')
