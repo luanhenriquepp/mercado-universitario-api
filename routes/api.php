@@ -34,5 +34,6 @@ Route::get('storage/{filename}', function ($filename)
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('category', 'CategoryController@index');
     Route::resource('users','UserController');
+    Route::get('public-page', 'AdvertisementController@publicPage');
     Route::resource('advertisement','AdvertisementController');
 });
