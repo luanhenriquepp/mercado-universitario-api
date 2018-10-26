@@ -10,13 +10,18 @@ class CityController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function index()
     {
-        //
+        return City::with('state')->paginate();
     }
-
+    public function getCitiesByUf($idState)
+    {
+        return City::with('state')
+            ->where('cd_state', '=', $idState)
+            ->paginate();
+    }
     /**
      * Show the form for creating a new resource.
      *

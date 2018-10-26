@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
+Route::get('cities/{id}', 'CityController@getCitiesByUf');
+Route::get('state','StateController@index');
 Route::get('storage/{filename}', function ($filename)
 {
     $path = storage_path('app/advertisement/' . $filename);

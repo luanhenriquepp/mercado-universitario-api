@@ -20,8 +20,7 @@ class CreateCitiesTable extends Migration
                 ->comment('nome da cidade');
             $table->string('ibge_code')
                 ->comment('código do ibg');
-            $table->integer('cd_state')
-                ->unsigned()
+            $table->integer('cd_state')->unsigned()
                 ->comment('código da foreign key da tabela de estados');
             $table->foreign('cd_state','cd_state_fk')
                 ->references('cd_state')
