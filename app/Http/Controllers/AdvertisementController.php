@@ -16,32 +16,46 @@ use JWTAuth;
 
 class AdvertisementController extends Controller
 {
+    public function validateUser()
+    {
+        $user = auth()->user();
+        if ($user == null || $user == false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuário não autenticado'
+            ], Response::HTTP_FORBIDDEN);
+        }
+        return true;
+    }
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function index()
     {
-        $user = auth()->user();
-        if ($user == false) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Usuário não autenticado',
-                ], Response::HTTP_BAD_REQUEST);
-        }
 
+        $this->validateUser();
         $advertisements = Advertisement::with('user', 'category', 'advertisement_status','address')
-            ->where('cd_user', $user->cd_user)->paginate();
-
+            ->where('cd_user',auth()->user()->cd_user )
+            ->paginate();
         return $advertisements;
     }
 
+    public function publicPage()
+    {
+        $this->validateUser();
+        $advertisements = Advertisement::with('user', 'category', 'advertisement_status','address')
+            ->where('cd_advertisement_status', '=', AdvertisementStatus::APPROVED)
+            ->paginate();
+        return $advertisements;
+    }
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
+        $this->validateUser();
+
         $validator = $request->validate([
             'title'                 => 'required|max:255|min:5',
             'ds_advertisement'      => 'required|max:255|min:32',
@@ -90,18 +104,8 @@ class AdvertisementController extends Controller
      */
     public function show($id)
     {
-        //Implementar se o anúncio pertence ao usuário autenticado
-        $user = auth()->user();
-
-        if ($user == null || $user == false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Usuário não autenticado'
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
+        $this->validateUser();
         return $advertisement = Advertisement::with('user')->find($id);
-
     }
 
     /**
@@ -111,8 +115,9 @@ class AdvertisementController extends Controller
      */
     public function update($id, Request $request)
     {
-        $advertisement = Advertisement::find($id);
+        $this->validateUser();
 
+        $advertisement = Advertisement::find($id);
         if ($advertisement->update($request->all())){
             return response()->json([
                 'sucess'    => true,
@@ -132,6 +137,7 @@ class AdvertisementController extends Controller
      */
     public function destroy($id)
     {
+        $this->validateUser();
         $advertisement = Advertisement::find($id);
 
         if ($advertisement->delete()) {
