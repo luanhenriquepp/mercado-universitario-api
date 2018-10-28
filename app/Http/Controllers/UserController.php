@@ -22,7 +22,6 @@ class UserController extends Controller
     {
         $credentials = $request->only('registration', 'password');
 
-
         if (!$token = JWTAuth::attempt($credentials)) {
 
             return response()->json([
@@ -42,23 +41,7 @@ class UserController extends Controller
     public function register(Request $request)
     {
 
-        $request->validate([
-            'name'              => 'required|max:255|min:3',
-            'registration'      => 'required|unique:tb_user|max:32|min:4',
-            'cpf'               => 'required|max:14|min:11|unique:tb_user',
-            'rg'                => 'required|max:14|min:5|unique:tb_user',
-            'birth'             => 'required',
-            'email'             => 'required|email|unique:tb_user',
-            'password'          => 'required|max:32|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
-            'public_place'      => 'required|max:255|min:10',
-            'number'            => 'required',
-            'complement'        => 'max:255',
-            'neighborhood'      => 'required|max:255|min:5',
-            'cep'               => 'required|max:20|min:5',
-            'university_name'   => 'required|max:255|min:3',
-            'course'            => 'required|max:255|min:2',
-            'semester'          => 'required|max:100|min:2',
-        ]);
+        $this->validateUserRegistration($request);
 
         \DB::beginTransaction();
         try {
@@ -216,6 +199,39 @@ class UserController extends Controller
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Valida as informações no momento em que o usuário é criado
+     * @param $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function validateUserRegistration($request)
+    {
+        $validator = $request->validate([
+            'name'              => 'required|max:255|min:3',
+            'registration'      => 'required|unique:tb_user|max:32|min:4',
+            'cpf'               => 'required|max:14|min:11|unique:tb_user',
+            'rg'                => 'required|max:14|min:5|unique:tb_user',
+            'birth'             => 'required',
+            'email'             => 'required|email|unique:tb_user',
+            'password'          => 'required|max:32|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
+            'public_place'      => 'required|max:255|min:10',
+            'number'            => 'required',
+            'complement'        => 'max:255',
+            'neighborhood'      => 'required|max:255|min:5',
+            'cep'               => 'required|max:20|min:5',
+            'university_name'   => 'required|max:255|min:3',
+            'course'            => 'required|max:255|min:2',
+            'semester'          => 'required|max:100|min:2',
+        ]);
+        if (!$validator) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator
+                    ->toJson()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        return true;
+    }
     /**
      * Método que gera o token
      * @param $token
