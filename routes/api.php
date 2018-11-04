@@ -17,22 +17,6 @@ Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
 Route::get('cities/{id}', 'CityController@getCitiesByUf');
 Route::get('state','StateController@index');
-Route::get('storage/{filename}', function ($filename)
-{
-    $path = storage_path('app/advertisement/' . $filename);
-
-    if (!File::exists($path)) {
-
-        abort(404);
-    }
-
-    $file = File::get($path);
-    $type = File::mimeType($path);
-    $response = Response::make($file, 200);
-    $response->header("Content-Type", $type);
-
-    return $response;
-});
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('category', 'CategoryController@index');
     Route::resource('users','UserController');

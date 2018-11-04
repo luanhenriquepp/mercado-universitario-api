@@ -17,8 +17,8 @@ class CreateAddressesTable extends Migration
             $table->increments('cd_address');
             $table->string('public_place')
             ->comment('Logradouro do endereço');
-            $table->integer('number');
-            $table->string('complement');
+            $table->integer('number')->nullable();
+            $table->string('complement')->nullable();
             $table->string('neighborhood')->comment('Bairro');
             $table->string('cep');
             $table->integer('cd_city')

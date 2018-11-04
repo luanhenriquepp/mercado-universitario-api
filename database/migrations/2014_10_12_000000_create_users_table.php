@@ -19,9 +19,9 @@ class CreateUsersTable extends Migration
             $table->string('registration',32)->unique()
                 ->comments('Mátricula do usuário.');
             $table->string('cpf', '14')->unique();
-            $table->string('user_photo');
+            $table->longText('user_photo');
             $table->string('rg', '14')->unique();
-            $table->dateTime('birth')->nullable();
+            $table->date('birth');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('password_confirmation');
