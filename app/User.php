@@ -20,6 +20,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property mixed cd_profile
  * @property string password_confirmation
  * @property array|null|string user_photo
+ * @property array|null|string phone_number
  * @method save()
  */
 class User extends Authenticatable implements JWTSubject
@@ -47,6 +48,7 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'cd_profile',
+        'phone_number',
         'roles'
     ];
 

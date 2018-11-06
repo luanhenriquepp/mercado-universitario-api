@@ -53,6 +53,7 @@ class UserController extends Controller
             'public_place'      => 'required|max:255|min:10',
             'number'            => 'required',
             'complement'        => 'max:255',
+            'phone_number'      => 'required',
             'neighborhood'      => 'required|max:255|min:5',
             'cep'               => 'required|max:20|min:5',
             'university_name'   => 'required|max:255|min:3',
@@ -87,6 +88,7 @@ class UserController extends Controller
             $user->email                    = $request->input('email');
             $user->password                 = bcrypt($request->input('password'));
             $user->password_confirmation    = bcrypt($request->input('password_confirmation'));
+            $user->phone_number             = $request->input('phone_number');
             $user->cd_address               = $address->cd_address;
             $user->cd_university            = $university->cd_university;
             $user->cd_profile               = $request->input('cd_profile', Profile::STUDENT);
