@@ -16,17 +16,7 @@ use JWTAuth;
 
 class AdvertisementController extends Controller
 {
-    public function validateUser()
-    {
-        $user = auth()->user();
-        if ($user == null || $user == false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Usuário não autenticado'
-            ], Response::HTTP_FORBIDDEN);
-        }
-        return true;
-    }
+
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
@@ -55,6 +45,7 @@ class AdvertisementController extends Controller
     public function store(Request $request)
     {
         $this->validateUser();
+        $this->validateAdvertisement($request);
 
         $validator = $request->validate([
             'title'                 => 'required|max:255|min:5',
@@ -116,6 +107,7 @@ class AdvertisementController extends Controller
     public function update($id, Request $request)
     {
         $this->validateUser();
+        $this->validateAdvertisement($request);
 
         $advertisement = Advertisement::find($id);
         if ($advertisement->update($request->all())){
@@ -151,5 +143,44 @@ class AdvertisementController extends Controller
             'false' => false,
             'message'=> 'Não foi possível excluir o anúncio!'
         ], Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     *  Validadores do cadastro e update de anúncio
+     * @param $request
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function validateAdvertisement($request)
+    {
+        $validator = $request->validate([
+            'title'                 => 'required|max:255|min:5',
+            'ds_advertisement'      => 'required|max:255|min:32',
+            'price'                 => 'required',
+            'cd_category'           => 'required'
+        ]);
+
+        if (!$validator) {
+            return response()->json([
+                    'success' => false,
+                    'message' => $validator
+                    ->toJson()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        return true;
+    }
+
+    /**
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function validateUser()
+    {
+        $user = auth()->user();
+        if ($user == null || $user == false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuário não autenticado'
+            ], Response::HTTP_FORBIDDEN);
+        }
+        return true;
     }
 }

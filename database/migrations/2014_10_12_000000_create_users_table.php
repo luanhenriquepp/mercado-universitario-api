@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('phone_number');
             $table->string('password_confirmation');
+
             $table->integer('cd_university')
                 ->unsigned()
                 ->comments('Foreign key da tabela de faculdades ->tb_university');
