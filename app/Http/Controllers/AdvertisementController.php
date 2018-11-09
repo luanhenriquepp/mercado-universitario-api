@@ -24,8 +24,8 @@ class AdvertisementController extends Controller
     {
 
         $this->validateUser();
-        $advertisements = Advertisement::with('user', 'category', 'advertisement_status','address')
-            ->where('cd_user',auth()->user()->cd_user )
+        $advertisements = Advertisement::with('user', 'category', 'advertisement_status')
+            ->where('cd_user',auth()->user()->cd_user)
             ->paginate();
         return $advertisements;
     }
@@ -33,7 +33,7 @@ class AdvertisementController extends Controller
     public function publicPage()
     {
         $this->validateUser();
-        $advertisements = Advertisement::with('user', 'category', 'advertisement_status','address')
+        $advertisements = Advertisement::with('user', 'category', 'advertisement_status','user.address','user.universities')
             ->where('cd_advertisement_status', '=', AdvertisementStatus::APPROVED)
             ->paginate();
         return $advertisements;
@@ -45,23 +45,8 @@ class AdvertisementController extends Controller
     public function store(Request $request)
     {
         $this->validateUser();
-        $this->validateAdvertisement($request);
+        $this->validateStoreAdvertisement($request);
 
-        $validator = $request->validate([
-            'title'                 => 'required|max:255|min:5',
-            'ds_advertisement'      => 'required|max:255|min:32',
-            'price'                 => 'required',
-            'cd_category'           => 'required'
-        ]);
-
-        if (!$validator) {
-            return response()
-                ->json([
-                    'success' => false,
-                    'message' => $validator
-                        ->toJson()
-                ], Response::HTTP_BAD_REQUEST);
-        }
 
         $advertisement = new Advertisement();
         $advertisement->title                   = $request->input('title');
@@ -70,7 +55,7 @@ class AdvertisementController extends Controller
         $advertisement->advertisement_photo     = $request->input('advertisement_photo', null);
         $advertisement->cd_category             = $request->input('cd_category');
         $advertisement->cd_user                 = auth()->user()->cd_user;
-        $advertisement->cd_address              = auth()->user()->cd_address;
+/*        $advertisement->cd_address              = auth()->user()->cd_address;*/
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
             AdvertisementStatus::AWAITINGAPPROVAL);
 
@@ -107,7 +92,7 @@ class AdvertisementController extends Controller
     public function update($id, Request $request)
     {
         $this->validateUser();
-        $this->validateAdvertisement($request);
+        $this->validateUpdateAdvertisement($request);
 
         $advertisement = Advertisement::find($id);
         if ($advertisement->update($request->all())){
@@ -150,11 +135,11 @@ class AdvertisementController extends Controller
      * @param $request
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function validateAdvertisement($request)
+    public function validateStoreAdvertisement($request)
     {
         $validator = $request->validate([
             'title'                 => 'required|max:255|min:5',
-            'ds_advertisement'      => 'required|max:255|min:32',
+            'ds_advertisement'      => 'required|max:255|min:5',
             'price'                 => 'required',
             'cd_category'           => 'required'
         ]);
@@ -169,6 +154,23 @@ class AdvertisementController extends Controller
         return true;
     }
 
+    public function validateUpdateAdvertisement($request)
+    {
+        $validator = $request->validate([
+            'title'                 => 'max:255|min:5',
+            'ds_advertisement'      => 'max:255|min:5',
+
+        ]);
+
+        if (!$validator) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator
+                    ->toJson()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        return true;
+    }
     /**
      * @return bool|\Illuminate\Http\JsonResponse
      */

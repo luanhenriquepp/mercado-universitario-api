@@ -43,6 +43,6 @@ class University extends Model
     ];
 
     public function users() {
-        return $this->hasMany(User::class,'','cd_university');
+        return $this->hasMany(User::class,'cd_university','cd_university');
     }
 }

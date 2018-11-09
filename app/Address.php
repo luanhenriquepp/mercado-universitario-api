@@ -43,6 +43,6 @@ class Address extends Model
 
     public function advertisement_address()
     {
-        return $this->belongsTo(Advertisement::class,'cd_address');
+        return $this->belongsTo(Advertisement::class,'cd_address','cd_address');
     }
 }

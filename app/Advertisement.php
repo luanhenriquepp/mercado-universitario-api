@@ -32,11 +32,10 @@ class Advertisement extends Model
         'title',
         'ds_advertisement',
         'price',
+        'advertisement_photo',
         'cd_user',
         'cd_category',
         'cd_advertisement_status',
-        'advertisement_photo',
-        'cd_address'
     ];
     
     /**
@@ -46,28 +45,28 @@ class Advertisement extends Model
         'created_at','updated_at'
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class,'cd_user');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function category()
     {
         return $this->belongsTo(Category::class,'cd_category');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function advertisement_status()
     {
         return $this->belongsTo(AdvertisementStatus::class,'cd_advertisement_status');
     }
 
-    public function address()
-    {
-        return $this->belongsTo(Address::class,'cd_address','cd_address');
-    }
-
-   /* public function advertisement_file()
-    {
-        return $this->belongsTo(AdvertisementFile::class,'cd_advertisement_file','cd_advertisement_file');
-    }*/
 }

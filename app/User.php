@@ -39,16 +39,15 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'cd_university',
-        'cd_address',
-        'user_photo',
         'name',
         'birth',
         'cpf',
         'email',
-        'password',
-        'cd_profile',
+        'user_photo',
         'phone_number',
+        'cd_university',
+        'cd_address',
+        'cd_profile',
         'roles'
     ];
 
@@ -80,7 +79,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function address()
     {
-        return $this->belongsTo(Address::class,'cd_address');
+        return $this->belongsTo(Address::class,'cd_address','cd_address');
     }
 
     /**
