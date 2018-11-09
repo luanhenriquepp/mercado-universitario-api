@@ -82,6 +82,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Address::class,'cd_address','cd_address');
     }
 
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

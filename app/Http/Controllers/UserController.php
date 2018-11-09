@@ -85,7 +85,6 @@ class UserController extends Controller
                 'message' => $e->getMessage()
             ],Response::HTTP_BAD_REQUEST);
         }
-        JWTAuth::fromUser($user);
         return response()->json([
             'success' => true,
             'message' => 'Usuário criado com sucesso!',
@@ -107,7 +106,7 @@ class UserController extends Controller
                     'message' => 'Usuário não autenticado'
                 ], Response::HTTP_UNAUTHORIZED);
         }
-        return $users = User::with('universities', 'address', 'profile')
+        return $users = User::with('universities', 'address.city.state', 'profile')
             ->paginate();
     }
 
@@ -118,7 +117,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return $user = User::with('universities', 'address', 'profile')->find($id);
+        return $user = User::with('universities', 'address.city.state', 'profile')->find($id);
 
     }
 
