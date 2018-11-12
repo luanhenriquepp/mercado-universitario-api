@@ -21,17 +21,13 @@ class UserController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->only('registration', 'password');
-
-
-        if (!$token = JWTAuth::attempt($credentials)) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Mátricula ou senha inválidos.'
-            ], Response::HTTP_BAD_REQUEST);
+        if ($token = JWTAuth::attempt($credentials)) {
+            return $this->respondWithToken($token);
         }
-
-        return $this->respondWithToken($token);
+        return response()->json([
+            'success' => false,
+            'message' => 'Mátricula ou senha inválidos.'
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -89,7 +85,6 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Usuário criado com sucesso!',
         ], Response::HTTP_CREATED);
-
     }
 
     /**
@@ -165,7 +160,7 @@ class UserController extends Controller
         if ($user->save() && $university->save() && $address->save()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Dados do usuário foram atualizados com sucesso!'
+                'message' => 'Dados do usuário atualizados com sucesso!'
             ], Response::HTTP_OK);
         }
 
@@ -240,6 +235,7 @@ class UserController extends Controller
      */
     protected function respondWithToken($token)
     {
+
         if ($token){
             return response()->json([
                 'access_token'  => $token,

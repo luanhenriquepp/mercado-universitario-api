@@ -6,6 +6,7 @@ use App\Advertisement;
 use App\AdvertisementFile;
 use App\AdvertisementStatus;
 use App\Category;
+use App\Profile;
 use Faker\Provider\Image;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,6 +19,7 @@ class AdvertisementController extends Controller
 {
 
     /**
+     * Retora todos anúncios
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function index()
@@ -30,6 +32,10 @@ class AdvertisementController extends Controller
         return $advertisements;
     }
 
+    /**
+     * Pagina pública
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public function publicPage()
     {
         $this->validateUser();
@@ -37,6 +43,29 @@ class AdvertisementController extends Controller
             ->where('cd_advertisement_status', '=', AdvertisementStatus::APPROVED)
             ->paginate();
         return $advertisements;
+    }
+
+    /**
+     * @param $id
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateStatus($id , Request $request)
+    {
+        if (auth()->user()->cd_profile != Profile::ADMIN || $this->validateUser() == false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        $advertisement = Advertisement::with('user', 'advertisement_status')->find($id);
+        $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Anúncio aprovado com sucesso!'
+        ], Response::HTTP_OK);
     }
     /**
      * @param Request $request
