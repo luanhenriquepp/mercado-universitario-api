@@ -139,7 +139,6 @@ class UserController extends Controller
         ]);
 
         $user = User::with('universities', 'address', 'profile')->find($id);
-
         $address = $user->address;
         $address->public_place      = $request->input('public_place');
         $address->number            = $request->input('number');
@@ -156,6 +155,7 @@ class UserController extends Controller
         $user->name                     = $request->input('name');
         $user->password                 = bcrypt($request->input('password'));
         $user->password_confirmation    = bcrypt($request->input('password'));
+        $user->cd_profile               = $request->input('cd_profile');
 
         if ($user->save() && $university->save() && $address->save()) {
             return response()->json([

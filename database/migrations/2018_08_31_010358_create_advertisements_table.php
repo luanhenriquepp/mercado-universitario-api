@@ -24,12 +24,6 @@ class CreateAdvertisementsTable extends Migration
             $table->foreign('cd_user','cd_user_fk')
                 ->references('cd_user')
                 ->on('tb_user');
-          /*  $table->integer('cd_address')
-                ->unsigned()
-                ->comments('Foreign key da tabela de endereço ->tb_address');
-            $table->foreign('cd_address')
-                ->references('cd_address')
-                ->on('tb_address');*/
             $table->integer('cd_category')->unsigned();
             $table->foreign('cd_category','cd_category_fk')
                 ->references('cd_category')

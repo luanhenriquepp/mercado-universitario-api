@@ -3,15 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Advertisement;
-use App\AdvertisementFile;
 use App\AdvertisementStatus;
-use App\Category;
 use App\Profile;
-use Faker\Provider\Image;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use JWTAuth;
 
 
@@ -46,11 +41,13 @@ class AdvertisementController extends Controller
     }
 
     /**
+     * Método destinado a aprovação de anúncio, fazendo validação se o usuário é um admin e se ele está autenticado
+     * Verifica se o usuário preencheu o campo de status do anúncio
      * @param $id
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateStatus($id , Request $request)
+    public function updateAdvertisementStatus($id , Request $request)
     {
         if (auth()->user()->cd_profile != Profile::ADMIN || $this->validateUser() == false) {
             return response()->json([
@@ -60,13 +57,27 @@ class AdvertisementController extends Controller
         }
 
         $advertisement = Advertisement::with('user', 'advertisement_status')->find($id);
+        if ($request->input('cd_advertisement_status') == false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Por favor informe o status do anúncio!'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status');
 
+       if ($advertisement->update()) {
+           return response()->json([
+               'success' => true,
+               'message' => 'Anúncio aprovado com sucesso!'
+           ], Response::HTTP_OK);
+       }
         return response()->json([
-            'success' => true,
-            'message' => 'Anúncio aprovado com sucesso!'
-        ], Response::HTTP_OK);
+            'success' => false,
+            'message' => 'Não foi possível atualizar os dados do anúncio!'
+        ], Response::HTTP_BAD_REQUEST);
     }
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -84,7 +95,6 @@ class AdvertisementController extends Controller
         $advertisement->advertisement_photo     = $request->input('advertisement_photo', null);
         $advertisement->cd_category             = $request->input('cd_category');
         $advertisement->cd_user                 = auth()->user()->cd_user;
-/*        $advertisement->cd_address              = auth()->user()->cd_address;*/
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
             AdvertisementStatus::AWAITINGAPPROVAL);
 
@@ -121,6 +131,7 @@ class AdvertisementController extends Controller
     public function update($id, Request $request)
     {
         $this->validateUser();
+
         $this->validateUpdateAdvertisement($request);
 
         $advertisement = Advertisement::find($id);

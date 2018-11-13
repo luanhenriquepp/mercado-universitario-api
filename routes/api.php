@@ -19,7 +19,7 @@ Route::get('cities/{id}', 'CityController@getCitiesByUf');
 Route::get('state','StateController@index');
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('category', 'CategoryController@index');
-    Route::put('advertisement/update-status/{id}','AdvertisementController@updateStatus');
+    Route::put('advertisement/update-status/{id}','AdvertisementController@updateAdvertisementStatus');
     Route::resource('users','UserController');
     Route::get('public-page', 'AdvertisementController@publicPage');
     Route::resource('advertisement','AdvertisementController');
