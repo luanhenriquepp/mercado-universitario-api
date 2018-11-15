@@ -17,9 +17,10 @@ Route::post('register', 'UserController@register');
 Route::post('login', 'UserController@authenticate');
 Route::get('cities/{id}', 'CityController@getCitiesByUf');
 Route::get('state','StateController@index');
-Route::get('advertisement/awaiting-approval', 'AdvertisementController@AwaitingApprovalAdvertisement');
+
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('category', 'CategoryController@index');
+    Route::get('advertisement/awaiting-approval', 'AdvertisementController@AwaitingApprovalAdvertisement');
     Route::put('advertisement/update-status/{id}','AdvertisementController@updateAdvertisementStatus');
     Route::resource('users','UserController');
     Route::get('public-page', 'AdvertisementController@publicPage');
