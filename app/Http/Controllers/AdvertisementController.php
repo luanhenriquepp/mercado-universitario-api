@@ -41,6 +41,17 @@ class AdvertisementController extends Controller
     }
 
     /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function AwaitingApprovalAdvertisement()
+    {
+         $advertisement = Advertisement::with('user', 'advertisement_status')
+            ->where('cd_advertisement_status', '=', AdvertisementStatus::AWAITINGAPPROVAL)
+            ->paginate();
+         return $advertisement;
+    }
+
+    /**
      * Método destinado a aprovação de anúncio, fazendo validação se o usuário é um admin e se ele está autenticado
      * Verifica se o usuário preencheu o campo de status do anúncio
      * @param $id
@@ -120,7 +131,7 @@ class AdvertisementController extends Controller
     public function show($id)
     {
         $this->validateUser();
-        return $advertisement = Advertisement::with('user')->find($id);
+        return $advertisement = Advertisement::with('user','category')->find($id);
     }
 
     /**
