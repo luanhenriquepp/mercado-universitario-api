@@ -43,9 +43,9 @@ class AdvertisementController extends Controller
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function AwaitingApprovalAdvertisement()
+    public function awaitingApprovalAdvertisement()
     {
-         $advertisement = Advertisement::with('user', 'advertisement_status')
+         $advertisement = Advertisement::with('user', 'advertisement_status','category')
             ->where('cd_advertisement_status', '=', AdvertisementStatus::AWAITINGAPPROVAL)
             ->paginate();
          return $advertisement;
