@@ -40,6 +40,16 @@ class AdvertisementController extends Controller
         return $advertisements;
     }
 
+
+    /**
+     * @param $id
+     * @return Advertisement|Advertisement[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     */
+    public function showPending($id)
+    {
+        $this->validateUser();
+        return $advertisement = Advertisement::with('user','category')->find($id);
+    }
     /**
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
