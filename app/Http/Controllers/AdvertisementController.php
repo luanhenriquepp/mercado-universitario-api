@@ -156,6 +156,8 @@ class AdvertisementController extends Controller
         $this->validateUpdateAdvertisement($request);
 
         $advertisement = Advertisement::find($id);
+        $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
+            AdvertisementStatus::AWAITINGAPPROVAL);
         if ($advertisement->update($request->all())){
             return response()->json([
                 'sucess'    => true,
