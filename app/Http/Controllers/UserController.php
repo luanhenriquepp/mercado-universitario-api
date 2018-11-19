@@ -14,6 +14,14 @@ use JWTAuth;
 class UserController extends Controller
 {
     /**
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function getCurrentUser()
+    {
+        return $user = User::with('universities', 'address.city.state', 'profile')
+            ->where('cd_user', auth()->user()->cd_user)->paginate();
+    }
+    /**
      * Método que autentica o usuário
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
