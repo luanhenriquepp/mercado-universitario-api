@@ -8,18 +8,29 @@ use App\University;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Validator;
 use JWTAuth;
 
 class UserController extends Controller
 {
     /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return array
      */
     public function getCurrentUser()
     {
-        return $user = User::with('universities', 'address.city.state', 'profile')
-            ->where('cd_user', auth()->user()->cd_user)->paginate();
+         $id = auth()->user()->cd_user;
+         $user = \DB::table('tb_user')
+        ->where('cd_user', '=', $id)
+        ->join('tb_address', 'tb_user.cd_user', '=', 'tb_address.cd_address')
+        ->join('tb_city', 'tb_address.cd_city', '=', 'tb_city.cd_city')
+        ->join('tb_state', 'tb_city.cd_state', '=', 'tb_state.cd_state')
+        ->join('tb_university', 'tb_user.cd_user', '=', 'tb_university.cd_university')
+        ->get();
+         return $user;
+       /* $user =  User::with('universities', 'address.city.state')
+            ->where('cd_user', auth()->user()->cd_user)->get()->toArray();
+        return $user;*/
     }
     /**
      * Método que autentica o usuário
@@ -130,11 +141,11 @@ class UserController extends Controller
      * @param $id
      * @return array
      */
-    public function update(Request $request, $id)
+    public function update($id, Request $request)
     {
         $request->validate([
             'name'                  => 'required|max:255|min:3',
-            'password'              => 'required|max:32|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
+            'password'              => 'required|max:255|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
             'public_place'          => 'required|max:255|min:10',
             'number'                => 'required',
             'complement'            => 'max:255',
@@ -160,10 +171,26 @@ class UserController extends Controller
         $university->semester           = $request->input('semester');
         $university->course             = $request->input('course');
 
+        /**
+         * TODO
+         * Fazer resto dos campos para receber do front
+         */
         $user->name                     = $request->input('name');
-        $user->password                 = bcrypt($request->input('password'));
-        $user->password_confirmation    = bcrypt($request->input('password'));
-        $user->cd_profile               = $request->input('cd_profile');
+        $user->user_photo               = $request->input('user_photo');
+        $user->password                 = $request->input('password');
+        $user->password_confirmation    = $request->input('password_confirmation');
+
+        if (Hash::needsRehash($user->password, []) || Hash::needsRehash($user->password_confirmation, []))
+        {
+            $password = Hash::make($user->password);
+            $password_confirmation = Hash::make($user->password_confirmation);
+            $user->password_confirmation = $password_confirmation;
+            $user->password = $password;
+        }
+
+        $idProfile = auth()->user()->cd_profile;
+        $user->cd_profile               = $request->input('cd_profile',$idProfile);
+
 
         if ($user->save() && $university->save() && $address->save()) {
             return response()->json([
