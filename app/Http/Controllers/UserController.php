@@ -145,7 +145,6 @@ class UserController extends Controller
     {
         $request->validate([
             'name'                  => 'required|max:255|min:3',
-            'password'              => 'required|max:255|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
             'public_place'          => 'required|max:255|min:10',
             'number'                => 'required',
             'complement'            => 'max:255',
@@ -171,26 +170,12 @@ class UserController extends Controller
         $university->semester           = $request->input('semester');
         $university->course             = $request->input('course');
 
-        /**
-         * TODO
-         * Fazer resto dos campos para receber do front
-         */
         $user->name                     = $request->input('name');
-        $user->user_photo               = $request->input('user_photo');
-        $user->password                 = $request->input('password');
-        $user->password_confirmation    = $request->input('password_confirmation');
-
-        if (Hash::needsRehash($user->password, []) || Hash::needsRehash($user->password_confirmation, []))
-        {
-            $password = Hash::make($user->password);
-            $password_confirmation = Hash::make($user->password_confirmation);
-            $user->password_confirmation = $password_confirmation;
-            $user->password = $password;
-        }
-
+        $user->birth                    = $request->input('birth');
+        $user->email                    = $request->input('email');
+        $user->phone_number             = $request->input('phone_number');
         $idProfile = auth()->user()->cd_profile;
         $user->cd_profile               = $request->input('cd_profile',$idProfile);
-
 
         if ($user->save() && $university->save() && $address->save()) {
             return response()->json([
