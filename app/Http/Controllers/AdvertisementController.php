@@ -7,6 +7,11 @@ use App\AdvertisementStatus;
 use App\Http\Requests\RequestAdvertisement;
 use App\Profile;
 use App\Service\AdvertisementService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use JWTAuth;
@@ -15,33 +20,32 @@ use JWTAuth;
 class AdvertisementController extends Controller
 {
 
-    public $service;
+    protected $service;
+
+    /**
+     * AdvertisementController constructor.
+     * @param AdvertisementService $service
+     */
     public function __construct(AdvertisementService $service)
     {
         $this->service = $service;
     }
 
+
     /**
-     * Retora todos anúncios
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function index()
     {
-
-        $this->validateUser();
-        $advertisements = Advertisement::with('user', 'category', 'advertisement_status')
-            ->where('cd_user',auth()->user()->cd_user)
-            ->paginate();
-        return $advertisements;
+       return $this->service->showAll();
     }
 
     /**
      * Pagina pública
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function publicPage()
     {
-        $this->validateUser();
         $advertisements = Advertisement::with('user', 'category', 'advertisement_status','user.address','user.universities')
             ->where('cd_advertisement_status', '=', AdvertisementStatus::APPROVED)
             ->paginate();
@@ -51,15 +55,14 @@ class AdvertisementController extends Controller
 
     /**
      * @param $id
-     * @return Advertisement|Advertisement[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|null
      */
     public function showPending($id)
     {
-        $this->validateUser();
         return $advertisement = Advertisement::with('user','category')->find($id);
     }
     /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function awaitingApprovalAdvertisement()
     {
@@ -69,89 +72,47 @@ class AdvertisementController extends Controller
          return $advertisement;
     }
 
+
+
     /**
      * Método destinado a aprovação de anúncio, fazendo validação se o usuário é um admin e se ele está autenticado
      * Verifica se o usuário preencheu o campo de status do anúncio
      * @param $id
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param RequestAdvertisement $request
+     * @return JsonResponse
      */
-    public function updateAdvertisementStatus($id , Request $request)
+    public function updateAdvertisementStatus($id , RequestAdvertisement $request)
     {
-        if (auth()->user()->cd_profile != Profile::ADMIN || $this->validateUser() == false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Acesso negado'
-            ], Response::HTTP_FORBIDDEN);
-        }
-
-        $advertisement = Advertisement::with('user', 'advertisement_status')->find($id);
-        if ($request->input('cd_advertisement_status') == false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Por favor informe o status do anúncio!'
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status');
-
-       if ($advertisement->update()) {
-           return response()->json([
-               'success' => true,
-               'message' => 'Anúncio aprovado com sucesso!'
-           ], Response::HTTP_OK);
-       }
-        return response()->json([
-            'success' => false,
-            'message' => 'Não foi possível atualizar os dados do anúncio!'
-        ], Response::HTTP_BAD_REQUEST);
+         return $this->service->updateStatusAdvertisement($id, $request);
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param RequestAdvertisement $request
+     * @return JsonResponse
      */
     public function store(RequestAdvertisement $request)
     {
-       $this->validateUser();
-       $data = $this->service->createAdvertisement($request);
-        if ($data->save()){
-            return response()->json(
-                [
-                    'data' => $data,
-                    'success' => true,
-                    'message' => 'Anúncio cadastrado com sucesso!'
-                ], Response::HTTP_CREATED);
-        }
+       return $this->service->createAdvertisement($request);
 
-        return response()->json([
-            'success'   => false,
-            'message'   => 'Ocorreu um erro no cadastro do anúncio!'
-        ], Response::HTTP_BAD_REQUEST);
     }
 
 
     /**
      * @param $id
-     * @return Advertisement|Advertisement[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|\Illuminate\Http\JsonResponse|null
+     * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|JsonResponse|null
      */
     public function show($id)
     {
-        $this->validateUser();
         return $advertisement = Advertisement::with('user','category')->find($id);
     }
 
     /**
      * @param $id
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update($id, Request $request)
     {
-        $this->validateUser();
-
-        $this->validateUpdateAdvertisement($request);
-
         $advertisement = Advertisement::find($id);
         $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
             AdvertisementStatus::AWAITINGAPPROVAL);
@@ -170,11 +131,10 @@ class AdvertisementController extends Controller
 
     /**
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        $this->validateUser();
         $advertisement = Advertisement::find($id);
 
         if ($advertisement->delete()) {
@@ -188,43 +148,5 @@ class AdvertisementController extends Controller
             'false' => false,
             'message'=> 'Não foi possível excluir o anúncio!'
         ], Response::HTTP_FORBIDDEN);
-    }
-
-    /**
-     *  Validadores do cadastro e update de anúncio
-     * @param $request
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-
-    public function validateUpdateAdvertisement($request)
-    {
-        $validator = $request->validate([
-            'title'                 => 'max:255|min:5',
-            'ds_advertisement'      => 'max:255|min:5',
-
-        ]);
-
-        if (!$validator) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator
-                    ->toJson()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-        return true;
-    }
-    /**
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function validateUser()
-    {
-        $user = auth()->user();
-        if ($user == null || $user == false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Usuário não autenticado'
-            ], Response::HTTP_FORBIDDEN);
-        }
-        return true;
     }
 }
