@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Advertisement;
 use App\AdvertisementStatus;
+use App\Http\Requests\RequestAdvertisement;
 use App\Profile;
+use App\Service\AdvertisementService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use JWTAuth;
@@ -12,6 +14,12 @@ use JWTAuth;
 
 class AdvertisementController extends Controller
 {
+
+    public $service;
+    public function __construct(AdvertisementService $service)
+    {
+        $this->service = $service;
+    }
 
     /**
      * Retora todos anúncios
@@ -103,25 +111,14 @@ class AdvertisementController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(RequestAdvertisement $request)
     {
-        $this->validateUser();
-        $this->validateStoreAdvertisement($request);
-
-
-        $advertisement = new Advertisement();
-        $advertisement->title                   = $request->input('title');
-        $advertisement->ds_advertisement        = $request->input('ds_advertisement');
-        $advertisement->price                   = $request->input('price');
-        $advertisement->advertisement_photo     = $request->input('advertisement_photo', null);
-        $advertisement->cd_category             = $request->input('cd_category');
-        $advertisement->cd_user                 = auth()->user()->cd_user;
-        $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
-            AdvertisementStatus::AWAITINGAPPROVAL);
-
-        if ($advertisement->save()){
+       $this->validateUser();
+       $data = $this->service->createAdvertisement($request);
+        if ($data->save()){
             return response()->json(
                 [
+                    'data' => $data,
                     'success' => true,
                     'message' => 'Anúncio cadastrado com sucesso!'
                 ], Response::HTTP_CREATED);
@@ -198,24 +195,6 @@ class AdvertisementController extends Controller
      * @param $request
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function validateStoreAdvertisement($request)
-    {
-        $validator = $request->validate([
-            'title'                 => 'required|max:255|min:5',
-            'ds_advertisement'      => 'required|max:255|min:5',
-            'price'                 => 'required',
-            'cd_category'           => 'required'
-        ]);
-
-        if (!$validator) {
-            return response()->json([
-                    'success' => false,
-                    'message' => $validator
-                    ->toJson()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-        return true;
-    }
 
     public function validateUpdateAdvertisement($request)
     {
