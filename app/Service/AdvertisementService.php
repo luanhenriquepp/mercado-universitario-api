@@ -27,7 +27,7 @@ class AdvertisementService {
             'cd_category' => $request->get('cd_category'),
             'cd_advertisement_status' => $request->input('cd_advertisement_status',
                 AdvertisementStatus::AWAITINGAPPROVAL)
-        ], Response::HTTP_ACCEPTED);
+        ]);
         return $advertisement;
     }
 }
