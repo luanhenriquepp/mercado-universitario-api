@@ -22,9 +22,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('category', 'CategoryController@index');
     Route::get('advertisement/awaiting-approval', 'AdvertisementController@awaitingApprovalAdvertisement');
     Route::get('advertisement/awaiting-approval/{id}', 'AdvertisementController@showPending');
-    Route::put('advertisement/update-status/{id}','AdvertisementController@updateAdvertisementStatus');
+    Route::put('advertisement/update-status/{id}','AdvertisementController@updateStatus');
     Route::get('current/user', 'UserController@getCurrentUser');
     Route::resource('users','UserController');
-    Route::get('public-page', 'AdvertisementController@publicPage');
+    Route::get('advertisement/public-page', 'AdvertisementController@publicPage');
     Route::resource('advertisement','AdvertisementController');
 });

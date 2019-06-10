@@ -6,11 +6,14 @@ use App\Address;
 use App\Profile;
 use App\University;
 use App\User;
+use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
-use Validator;
-use JWTAuth;
+use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class UserController extends Controller
 {
@@ -28,14 +31,12 @@ class UserController extends Controller
         ->join('tb_university', 'tb_user.cd_user', '=', 'tb_university.cd_university')
         ->get();
          return $user;
-       /* $user =  User::with('universities', 'address.city.state')
-            ->where('cd_user', auth()->user()->cd_user)->get()->toArray();
-        return $user;*/
     }
+
     /**
      * Método que autentica o usuário
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function authenticate(Request $request)
     {
@@ -52,14 +53,14 @@ class UserController extends Controller
     /**
      * Método que registra um novo usuário
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function register(Request $request)
     {
 
         $this->validateUserRegistration($request);
 
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $address = new Address();
             $address->public_place      = $request->input('public_place');
@@ -91,16 +92,16 @@ class UserController extends Controller
             $user->cd_university            = $university->cd_university;
             $user->cd_profile               = $request->input('cd_profile', Profile::STUDENT);
             $user->save();
-
-            \DB::commit();
+            DB::commit();
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ],Response::HTTP_BAD_REQUEST);
         }
         return response()->json([
+            'data'    =>$user,
             'success' => true,
             'message' => 'Usuário criado com sucesso!',
         ], Response::HTTP_CREATED);
@@ -108,7 +109,7 @@ class UserController extends Controller
 
     /**
      * Mostra todos os usuários do sistema
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Http\JsonResponse
+     * @return LengthAwarePaginator|JsonResponse
      */
     public function index()
     {
@@ -192,7 +193,7 @@ class UserController extends Controller
 
     /**
      * Método que pega o usuário autenticado
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function getAuthenticatedUser()
     {
@@ -203,7 +204,7 @@ class UserController extends Controller
                     'data'      => $user
                 ], Response::HTTP_OK);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -218,7 +219,7 @@ class UserController extends Controller
     /**
      * Valida as informações no momento em que o usuário é criado
      * @param $request
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function validateUserRegistration($request)
     {
@@ -248,10 +249,11 @@ class UserController extends Controller
         }
         return true;
     }
+
     /**
      * Método que gera o token
      * @param $token
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function respondWithToken($token)
     {
@@ -260,7 +262,7 @@ class UserController extends Controller
             return response()->json([
                 'access_token'  => $token,
                 'token_type'    => 'bearer',
-                'expires_in'    => auth('api')->factory()->getTTL() * 60
+                'expires_in'    => auth('api')->factory()->getTTL() * 600
             ], Response::HTTP_OK);
         }
 

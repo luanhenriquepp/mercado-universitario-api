@@ -3,19 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Advertisement;
-use App\AdvertisementStatus;
 use App\Http\Requests\RequestAdvertisement;
-use App\Profile;
 use App\Service\AdvertisementService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use JWTAuth;
-
 
 class AdvertisementController extends Controller
 {
@@ -31,48 +25,40 @@ class AdvertisementController extends Controller
         $this->service = $service;
     }
 
-
     /**
      * @return LengthAwarePaginator
      */
     public function index()
     {
-       return $this->service->showAll();
+       return $this->service->getAll();
     }
 
     /**
-     * Pagina pública
      * @return LengthAwarePaginator
      */
     public function publicPage()
     {
-        $advertisements = Advertisement::with('user', 'category', 'advertisement_status','user.address','user.universities')
-            ->where('cd_advertisement_status', '=', AdvertisementStatus::APPROVED)
-            ->paginate();
-        return $advertisements;
+       return $this->service->publicPageAll();
     }
 
-
     /**
+     * Método retorna todos os anúncios do usuários pendente do usuário.
      * @param $id
      * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|null
      */
     public function showPending($id)
     {
-        return $advertisement = Advertisement::with('user','category')->find($id);
+        return $this->service->pendingAdvertisement($id);
     }
+
     /**
+     * Método retorna todos os anúncios que estão aguardando aprovação
      * @return LengthAwarePaginator
      */
     public function awaitingApprovalAdvertisement()
     {
-         $advertisement = Advertisement::with('user', 'advertisement_status','category')
-            ->where('cd_advertisement_status', '=', AdvertisementStatus::AWAITINGAPPROVAL)
-            ->paginate();
-         return $advertisement;
+        return $this->service->awaitingApproval();
     }
-
-
 
     /**
      * Método destinado a aprovação de anúncio, fazendo validação se o usuário é um admin e se ele está autenticado
@@ -81,9 +67,9 @@ class AdvertisementController extends Controller
      * @param RequestAdvertisement $request
      * @return JsonResponse
      */
-    public function updateAdvertisementStatus($id , RequestAdvertisement $request)
+    public function updateStatus($id , RequestAdvertisement $request)
     {
-         return $this->service->updateStatusAdvertisement($id, $request);
+         return $this->service->updateAdvertisementStatus($id, $request);
     }
 
     /**
@@ -96,37 +82,23 @@ class AdvertisementController extends Controller
 
     }
 
-
     /**
      * @param $id
-     * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|JsonResponse|null
+     * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|null
      */
     public function show($id)
     {
-        return $advertisement = Advertisement::with('user','category')->find($id);
+        return $this->service->getById($id);
     }
 
     /**
      * @param $id
-     * @param Request $request
+     * @param RequestAdvertisement $request
      * @return JsonResponse
      */
-    public function update($id, Request $request)
+    public function update($id, RequestAdvertisement $request)
     {
-        $advertisement = Advertisement::find($id);
-        $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
-            AdvertisementStatus::AWAITINGAPPROVAL);
-        if ($advertisement->update($request->all())){
-            return response()->json([
-                'sucess'    => true,
-                'message'   => 'Anúncio atualizado com sucesso!'
-            ], Response::HTTP_OK);
-        }
-
-        return response()->json([
-            'success'   => false,
-            'message'   => 'Não foi possível atualizar o anúncio!'
-        ], Response::HTTP_BAD_REQUEST);
+       return $this->service->updateAdvertisement($id, $request);
     }
 
     /**
@@ -135,18 +107,7 @@ class AdvertisementController extends Controller
      */
     public function destroy($id)
     {
-        $advertisement = Advertisement::find($id);
-
-        if ($advertisement->delete()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Anúncio excluído com sucesso!'
-            ], Response::HTTP_OK);
-        }
-
-        return response()->json([
-            'false' => false,
-            'message'=> 'Não foi possível excluir o anúncio!'
-        ], Response::HTTP_FORBIDDEN);
+       return $this->service->deleteAdvertisement($id);
     }
+
 }
