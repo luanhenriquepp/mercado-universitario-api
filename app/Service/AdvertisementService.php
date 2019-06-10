@@ -6,12 +6,15 @@ use App\Advertisement;
 use App\AdvertisementStatus;
 use App\Http\Requests\RequestAdvertisement;
 use App\Profile;
+use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class AdvertisementService
 {
@@ -40,7 +43,7 @@ class AdvertisementService
      */
     public function getById($id)
     {
-        return Advertisement::with('user', 'category')->find($id);
+        return Advertisement::with('user', 'category')->findOrFail($id);
     }
 
     /**
@@ -60,19 +63,21 @@ class AdvertisementService
                 AdvertisementStatus::AWAITINGAPPROVAL)
         ]);
 
-        if ($advertisement->save()) {
+        try {
+            $advertisement->save();
             return response()->json(
                 [
                     'data' => $advertisement,
                     'success' => true,
                     'message' => 'Anúncio cadastrado com sucesso!'
                 ], Response::HTTP_CREATED);
+        }catch (Exception $e) {
+            Log::error($e);
+            return response()->json([
+                'success'   => false,
+                'message'   => $e->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Ocorreu um erro no cadastro do anúncio!'
-        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -82,27 +87,24 @@ class AdvertisementService
      */
     public function updateAdvertisement($id, RequestAdvertisement $request)
     {
-        $advertisement = Advertisement::find($id);
-        if (!$advertisement) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Nenhum anúncio foi encontrado com esse código!'
-            ], Response::HTTP_FOUND);
-        }
-        $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
-            AdvertisementStatus::AWAITINGAPPROVAL);
-        if ($advertisement->update($request->all())) {
+
+        try {
+            $advertisement = Advertisement::findOrFail($id);
+            $advertisement->cd_advertisement_status = $request->input('cd_advertisement_status',
+                AdvertisementStatus::AWAITINGAPPROVAL);
+            $advertisement->update($request->all());
             return response()->json([
                 'data' => $advertisement,
                 'success' => true,
                 'message' => 'Anúncio atualizado com sucesso!'
             ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            Log::error($e);
+            return response()->json([
+                'success' => false,
+                'message' => 'Não foi possível atualizar o anúncio!'
+            ], Response::HTTP_BAD_REQUEST);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Não foi possível atualizar o anúncio!'
-        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -111,19 +113,20 @@ class AdvertisementService
      */
     public function deleteAdvertisement($id)
     {
-        $advertisement = Advertisement::find($id);
-
-        if ($advertisement->delete()) {
+        try {
+            $advertisement = Advertisement::findOrFail($id);
+            $advertisement->delete();
             return response()->json([
                 'success' => true,
                 'message' => 'Anúncio excluído com sucesso!'
             ], Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            Log::error($e);
+            return response()->json([
+                'false' => false,
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
         }
-
-        return response()->json([
-            'false' => false,
-            'message' => 'Não foi possível excluir o anúncio!'
-        ], Response::HTTP_FORBIDDEN);
     }
 
     /**
