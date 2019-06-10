@@ -189,6 +189,7 @@ class AdvertisementService
     }
 
     /**
+     * Método retorna todos os anúncios que estão aguardando aprovação
      * @return LengthAwarePaginator
      */
     public function awaitingApproval()
@@ -198,6 +199,10 @@ class AdvertisementService
             ->paginate();
     }
 
+    /**
+     * @param $id
+     * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|null
+     */
     public function pendingAdvertisement($id)
     {
         return $advertisement = Advertisement::with('user','category')->find($id);

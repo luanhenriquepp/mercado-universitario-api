@@ -41,8 +41,8 @@ class AdvertisementController extends Controller
        return $this->service->publicPageAll();
     }
 
+
     /**
-     * Método retorna todos os anúncios do usuários pendente do usuário.
      * @param $id
      * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|null
      */
@@ -52,7 +52,6 @@ class AdvertisementController extends Controller
     }
 
     /**
-     * Método retorna todos os anúncios que estão aguardando aprovação
      * @return LengthAwarePaginator
      */
     public function awaitingApprovalAdvertisement()
@@ -61,8 +60,6 @@ class AdvertisementController extends Controller
     }
 
     /**
-     * Método destinado a aprovação de anúncio, fazendo validação se o usuário é um admin e se ele está autenticado
-     * Verifica se o usuário preencheu o campo de status do anúncio
      * @param $id
      * @param RequestAdvertisement $request
      * @return JsonResponse
