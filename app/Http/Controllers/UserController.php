@@ -3,34 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\Constants\Constants;
+use App\Constants\Messages;
+use App\Http\Requests\RequestUser;
 use App\Profile;
+use App\Service\UserService;
 use App\University;
 use App\User;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class UserController extends Controller
 {
+    protected $service;
+
+    /**
+     * AdvertisementController constructor.
+     * @param UserService $service
+     */
+    public function __construct(UserService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * @return array
      */
     public function getCurrentUser()
     {
-         $id = auth()->user()->cd_user;
-         $user = \DB::table('tb_user')
-        ->where('cd_user', '=', $id)
-        ->join('tb_address', 'tb_user.cd_user', '=', 'tb_address.cd_address')
-        ->join('tb_city', 'tb_address.cd_city', '=', 'tb_city.cd_city')
-        ->join('tb_state', 'tb_city.cd_state', '=', 'tb_state.cd_state')
-        ->join('tb_university', 'tb_user.cd_user', '=', 'tb_university.cd_university')
-        ->get();
-         return $user;
+
     }
 
     /**
@@ -46,7 +56,7 @@ class UserController extends Controller
         }
         return response()->json([
             'success' => false,
-            'message' => 'Mátricula ou senha inválidos.'
+            'message' => Messages::MSG003
         ], Response::HTTP_BAD_REQUEST);
     }
 
@@ -55,10 +65,8 @@ class UserController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function register(Request $request)
+    public function register(RequestUser $request)
     {
-
-        $this->validateUserRegistration($request);
 
         DB::beginTransaction();
         try {
@@ -93,17 +101,18 @@ class UserController extends Controller
             $user->cd_profile               = $request->input('cd_profile', Profile::STUDENT);
             $user->save();
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            Log::error($e);
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => Messages::MSG002
             ],Response::HTTP_BAD_REQUEST);
         }
         return response()->json([
-            'data'    =>$user,
+            Constants::DATA    =>$user,
             'success' => true,
-            'message' => 'Usuário criado com sucesso!',
+            'message' => Messages::MSG001
         ], Response::HTTP_CREATED);
     }
 
@@ -118,7 +127,7 @@ class UserController extends Controller
             return response()
                 ->json([
                     'success' => false,
-                    'message' => 'Usuário não autenticado'
+                    'message' => Messages::MSG004
                 ], Response::HTTP_UNAUTHORIZED);
         }
         return $users = User::with('universities', 'address.city.state', 'profile')
@@ -128,11 +137,11 @@ class UserController extends Controller
     /**
      * Pega usuário por ID
      * @param $id
-     * @return User|User[]|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     * @return User|User[]|Builder|Builder[]|Collection|Model|null
      */
     public function show($id)
     {
-        return $user = User::with('universities', 'address.city.state', 'profile')->find($id);
+        return User::with('universities', 'address.city.state', 'profile')->find($id);
 
     }
 
@@ -181,18 +190,18 @@ class UserController extends Controller
         if ($user->save() && $university->save() && $address->save()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Dados do usuário atualizados com sucesso!'
+                'message' => Messages::MSG006
             ], Response::HTTP_OK);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Não foi possível atualizar os dados do usuário!'
+            'message' => Messages::MSG005
         ], Response::HTTP_BAD_REQUEST);
     }
 
+
     /**
-     * Método que pega o usuário autenticado
      * @return JsonResponse
      */
     public function getAuthenticatedUser()
@@ -200,20 +209,17 @@ class UserController extends Controller
         try {
             if ($user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json([
-                    'success'   => true,
-                    'data'      => $user
+                    'success'      => true,
+                    Constants::DATA         => $user
                 ], Response::HTTP_OK);
             }
         } catch (Exception $e) {
+            Log::error($e);
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], Response::HTTP_NOT_FOUND);
+                'message' => Messages::MSG002
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return response()->json([
-            'success' => false,
-            'message' => 'Ocorreu um erro inesperado'
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -221,34 +227,6 @@ class UserController extends Controller
      * @param $request
      * @return bool|JsonResponse
      */
-    public function validateUserRegistration($request)
-    {
-        $validator = $request->validate([
-            'name'              => 'required|max:255|min:3',
-            'registration'      => 'required|unique:tb_user|max:32|min:4',
-            'cpf'               => 'required|max:14|min:11|unique:tb_user',
-            'rg'                => 'required|max:14|min:5|unique:tb_user',
-            'birth'             => 'required',
-            'email'             => 'required|email|unique:tb_user',
-            'password'          => 'required|max:32|min:8|regex: ^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$^|confirmed',
-            'public_place'      => 'required|max:255|min:10',
-            'number'            => 'required',
-            'complement'        => 'max:255',
-            'neighborhood'      => 'required|max:255|min:5',
-            'cep'               => 'required|max:20|min:5',
-            'university_name'   => 'required|max:255|min:3',
-            'course'            => 'required|max:255|min:2',
-            'semester'          => 'required|max:100|min:2',
-        ]);
-        if (!$validator) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator
-                    ->toJson()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-        return true;
-    }
 
     /**
      * Método que gera o token
@@ -267,8 +245,8 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'success'   => false,
-            'message'   => 'Ocorreu um erro ao gerar o token!'
+            'success' => false,
+            'message' => Messages::MSG002
         ], Response::HTTP_BAD_REQUEST);
     }
 }
