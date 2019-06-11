@@ -35,12 +35,14 @@ class UserController extends Controller
     {
         $this->service = $service;
     }
+
     /**
      * @return array
      */
     public function getCurrentUser()
     {
 
+        return $this->service->getUser();
     }
 
     /**
