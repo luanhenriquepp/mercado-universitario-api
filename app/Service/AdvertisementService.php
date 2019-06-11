@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Advertisement;
 use App\AdvertisementStatus;
+use App\Constants\Constants;
+use App\Constants\Messages;
 use App\Http\Requests\RequestAdvertisement;
 use App\Profile;
 use Exception;
@@ -31,10 +33,9 @@ class AdvertisementService
      */
     public function getAll()
     {
-        $advertisements = Advertisement::with('user', 'category', 'advertisement_status')
+        return Advertisement::with('user', 'category', 'advertisement_status')
             ->where('cd_user', auth()->user()->cd_user)
             ->paginate();
-        return $advertisements;
     }
 
     /**
@@ -69,7 +70,7 @@ class AdvertisementService
                 [
                     'data' => $advertisement,
                     'success' => true,
-                    'message' => 'Anúncio cadastrado com sucesso!'
+                    'message' => Messages::MSG007
                 ], Response::HTTP_CREATED);
         }catch (Exception $e) {
             Log::error($e);
@@ -96,35 +97,34 @@ class AdvertisementService
             return response()->json([
                 'data' => $advertisement,
                 'success' => true,
-                'message' => 'Anúncio atualizado com sucesso!'
+                'message' => Messages::MSG006
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error($e);
             return response()->json([
-                'success' => false,
-                'message' => 'Não foi possível atualizar o anúncio!'
+                'success'  => false,
+                'message'  =>  Messages::MSG005
             ], Response::HTTP_BAD_REQUEST);
         }
     }
 
     /**
      * @param $id
-     * @return JsonResponse
+     * @return array
      */
     public function deleteAdvertisement($id)
     {
         try {
-            $advertisement = Advertisement::findOrFail($id);
-            $advertisement->delete();
-            return response()->json([
+            Advertisement::findOrFail($id)->delete();
+            return $response = [
                 'success' => true,
-                'message' => 'Anúncio excluído com sucesso!'
-            ], Response::HTTP_OK);
+                'message' => Messages::MSG008
+            ];
         } catch (ModelNotFoundException $e) {
             Log::error($e);
             return response()->json([
-                'false' => false,
-                'message' => $e->getMessage()
+                'success' => false,
+                'message' => Messages::MSG002
             ], Response::HTTP_NOT_FOUND);
         }
     }
@@ -139,8 +139,8 @@ class AdvertisementService
 
         if ($this->checkUserProfile()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Acesso negado'
+                'success'   => false,
+                'message' => Messages::MSG009
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -148,8 +148,8 @@ class AdvertisementService
 
         if ($request->input('cd_advertisement_status') == false) {
             return response()->json([
-                'success' => false,
-                'message' => 'Por favor informe o status do anúncio!'
+                'success'  => false,
+                'message'  => Messages::MSG010
             ], Response::HTTP_BAD_REQUEST);
         }
 
@@ -159,12 +159,12 @@ class AdvertisementService
             return response()->json([
                 'data' => $advertisement,
                 'success' => true,
-                'message' => 'Anúncio aprovado com sucesso!'
+                'message' => Messages::MSG011
             ], Response::HTTP_OK);
         }
         return response()->json([
-            'success' => false,
-            'message' => 'Não foi possível atualizar os dados do anúncio!'
+            'success'   => false,
+            'message' => Messages::MSG005
         ], Response::HTTP_BAD_REQUEST);
     }
 
