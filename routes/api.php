@@ -24,7 +24,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('advertisement/awaiting-approval/{id}', 'AdvertisementController@showPending');
     Route::put('advertisement/update-status/{id}','AdvertisementController@updateStatus');
     Route::get('current/user', 'UserController@getCurrentUser');
-    Route::resource('users','UserController');
+    Route::resource('user','UserController');
     Route::get('advertisement/public-page', 'AdvertisementController@publicPage');
     Route::resource('advertisement','AdvertisementController');
 });

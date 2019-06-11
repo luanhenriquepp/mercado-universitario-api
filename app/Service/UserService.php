@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\User;
-use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -15,9 +14,12 @@ class UserService
         $this->user = $user;
     }
 
+    /**
+     * @return array
+     */
     public function getUser()
     {
         $id = auth()->user()->cd_user;
-        return $user = User::with('address.city.state', 'universities')->find($id)->relationsToArray();
+        return  User::with('universities', 'address.city.state')->find($id);
     }
 }

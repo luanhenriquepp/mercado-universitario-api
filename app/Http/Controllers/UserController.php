@@ -57,14 +57,14 @@ class UserController extends Controller
             return $this->respondWithToken($token);
         }
         return response()->json([
-            'success' => false,
-            'message' => Messages::MSG003
+            Constants::SUCCESS => false,
+            Constants::MESSAGE => Messages::MSG003
         ], Response::HTTP_BAD_REQUEST);
     }
 
     /**
      * Método que registra um novo usuário
-     * @param Request $request
+     * @param RequestUser $request
      * @return JsonResponse
      */
     public function register(RequestUser $request)
@@ -103,19 +103,20 @@ class UserController extends Controller
             $user->cd_profile               = $request->input('cd_profile', Profile::STUDENT);
             $user->save();
             DB::commit();
+            return response()->json([
+                Constants::DATA     => $user,
+                Constants::SUCCESS  => true,
+                Constants::MESSAGE  => Messages::MSG001
+            ], Response::HTTP_CREATED);
         } catch (Exception $e) {
             Log::error($e);
             DB::rollback();
             return response()->json([
-                'success' => false,
-                'message' => Messages::MSG002
+                Constants::SUCCESS   => false,
+                Constants::MESSAGE   => Messages::MSG002,
+                Constants::ERROR     => $e->getMessage()
             ],Response::HTTP_BAD_REQUEST);
         }
-        return response()->json([
-            Constants::DATA    =>$user,
-            'success' => true,
-            'message' => Messages::MSG001
-        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -124,16 +125,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        if ($user == false) {
-            return response()
-                ->json([
-                    'success' => false,
-                    'message' => Messages::MSG004
-                ], Response::HTTP_UNAUTHORIZED);
-        }
-        return $users = User::with('universities', 'address.city.state', 'profile')
-            ->paginate();
+        return $users = User::with('universities', 'address.city.state', 'profile')->paginate();
     }
 
     /**
@@ -191,14 +183,14 @@ class UserController extends Controller
 
         if ($user->save() && $university->save() && $address->save()) {
             return response()->json([
-                'success' => true,
-                'message' => Messages::MSG006
+                Constants::SUCCESS => true,
+                Constants::MESSAGE => Messages::MSG006
             ], Response::HTTP_OK);
         }
 
         return response()->json([
-            'success' => false,
-            'message' => Messages::MSG005
+            Constants::SUCCESS => false,
+            Constants::MESSAGE => Messages::MSG005
         ], Response::HTTP_BAD_REQUEST);
     }
 
@@ -211,15 +203,16 @@ class UserController extends Controller
         try {
             if ($user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json([
-                    'success'      => true,
+                    Constants::SUCCESS      => true,
                     Constants::DATA         => $user
                 ], Response::HTTP_OK);
             }
         } catch (Exception $e) {
             Log::error($e);
             return response()->json([
-                'success' => false,
-                'message' => Messages::MSG002
+                Constants::SUCCESS  => false,
+                Constants::MESSAGE  => Messages::MSG002,
+                Constants::ERROR    => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -247,8 +240,8 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'success' => false,
-            'message' => Messages::MSG002
+            Constants::SUCCESS => false,
+            Constants::MESSAGE => Messages::MSG002
         ], Response::HTTP_BAD_REQUEST);
     }
 }
