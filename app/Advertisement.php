@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
+
 
 /**
  * @property string cd_category
@@ -38,6 +40,10 @@ class Advertisement extends Model
         'cd_category',
         'cd_advertisement_status',
     ];
+
+    protected $appends = [
+        'file_path'
+    ];
     
     /**
      * @var array
@@ -70,4 +76,8 @@ class Advertisement extends Model
         return $this->belongsTo(AdvertisementStatus::class,'cd_advertisement_status');
     }
 
+    public function getFilePathAttribute()
+    {
+        return Storage::url($this->attributes['advertisement_photo']);
+    }
 }

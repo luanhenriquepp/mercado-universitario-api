@@ -47,17 +47,24 @@ class AdvertisementService
         return Advertisement::with('user', 'category')->findOrFail($id);
     }
 
+    public function createFile($file)
+    {
+        $fileName = uniqid().date('Y-m-d').'.pdf';
+        $directory = 'advertisement/';
+        $file->advertisement_photo->storeAs('public/'.$directory, $fileName);
+        return $directory.$fileName;
+    }
     /**
      * @param  $request
      * @return JsonResponse $advertisement
      */
     public function createAdvertisement($request)
     {
+
         $advertisement = $this->advertisement->create([
             'title' => $request->get('title'),
             'ds_advertisement' => $request->get('ds_advertisement'),
             'price' => $request->get('price'),
-            'advertisement_photo' => $request->advertisement_photo->store('advertisement'),
             'cd_user' => auth()->user()->cd_user,
             'cd_category' => $request->get('cd_category'),
             'cd_advertisement_status' => $request->input('cd_advertisement_status',
@@ -66,6 +73,10 @@ class AdvertisementService
 
         try {
             $advertisement->save();
+            if ($advertisement) {
+                $advertisement->advertisement_photo = $this->createFile($request);
+                $advertisement->save();
+            }
             return response()->json(
                 [
                     Constants::DATA     => $advertisement,
