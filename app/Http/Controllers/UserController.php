@@ -42,7 +42,7 @@ class UserController extends Controller
     public function getCurrentUser()
     {
 
-        return $this->service->getUser();
+        return $this->service->getUserArray();
     }
 
     /**
