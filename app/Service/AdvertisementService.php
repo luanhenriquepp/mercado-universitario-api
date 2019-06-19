@@ -79,15 +79,16 @@ class AdvertisementService
             }
             return response()->json(
                 [
-                    'data' => $advertisement,
-                    'success' => true,
-                    'message' => Messages::MSG007
+                    Constants::DATA     => $advertisement,
+                    Constants::SUCCESS  => true,
+                    Constants::MESSAGE  => Messages::MSG007
                 ], Response::HTTP_CREATED);
         }catch (Exception $e) {
             Log::error($e);
             return response()->json([
-                'success'   => false,
-                'message'   => $e->getMessage(),
+                Constants::SUCCESS   => false,
+                Constants::MESSAGE   => Messages::MSG002,
+                Constants::ERROR     => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -106,15 +107,16 @@ class AdvertisementService
                 AdvertisementStatus::AWAITINGAPPROVAL);
             $advertisement->update($request->all());
             return response()->json([
-                'data' => $advertisement,
-                'success' => true,
-                'message' => Messages::MSG006
+                Constants::DATA => $advertisement,
+                Constants::SUCCESS => true,
+                Constants::MESSAGE => Messages::MSG006
             ], Response::HTTP_OK);
         } catch (Exception $e) {
             Log::error($e);
             return response()->json([
-                'success'  => false,
-                'message'  =>  Messages::MSG005
+                Constants::SUCCESS  => false,
+                Constants::ERROR  => $e->getMessage(),
+                Constants::MESSAGE  =>  Messages::MSG005
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -127,15 +129,16 @@ class AdvertisementService
     {
         try {
             Advertisement::findOrFail($id)->delete();
-            return $response = [
-                'success' => true,
-                'message' => Messages::MSG008
-            ];
+            return response()->json([
+                Constants::SUCCESS => true,
+                Constants::MESSAGE => Messages::MSG008
+            ], Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             Log::error($e);
             return response()->json([
-                'success' => false,
-                'message' => Messages::MSG002
+                Constants::SUCCESS => false,
+                Constants::ERROR => $e->getMessage(),
+                Constants::MESSAGE => Messages::MSG002
             ], Response::HTTP_NOT_FOUND);
         }
     }
@@ -150,8 +153,8 @@ class AdvertisementService
 
         if ($this->checkUserProfile()) {
             return response()->json([
-                'success'   => false,
-                'message' => Messages::MSG009
+                Constants::SUCCESS   => false,
+                Constants::MESSAGE   => Messages::MSG009
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -159,8 +162,8 @@ class AdvertisementService
 
         if ($request->input('cd_advertisement_status') == false) {
             return response()->json([
-                'success'  => false,
-                'message'  => Messages::MSG010
+                Constants::SUCCESS  => false,
+                Constants::MESSAGE  => Messages::MSG010
             ], Response::HTTP_BAD_REQUEST);
         }
 
@@ -168,14 +171,14 @@ class AdvertisementService
 
         if ($advertisement->update()) {
             return response()->json([
-                'data' => $advertisement,
-                'success' => true,
-                'message' => Messages::MSG011
+                Constants::DATA => $advertisement,
+                Constants::SUCCESS => true,
+                Constants::MESSAGE => Messages::MSG011
             ], Response::HTTP_OK);
         }
         return response()->json([
-            'success'   => false,
-            'message' => Messages::MSG005
+            Constants::SUCCESS   => false,
+            Constants::MESSAGE => Messages::MSG005
         ], Response::HTTP_BAD_REQUEST);
     }
 

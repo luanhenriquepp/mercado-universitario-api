@@ -13,6 +13,7 @@ final class Constants
 
     const SUCCESS = 'success';
     const MESSAGE = 'message';
+    const ERROR   = 'error';
 
     const MAX100                           = 'max:100';
     const MAX15                            = 'max:15';
