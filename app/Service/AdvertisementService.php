@@ -57,7 +57,7 @@ class AdvertisementService
             'title' => $request->get('title'),
             'ds_advertisement' => $request->get('ds_advertisement'),
             'price' => $request->get('price'),
-            'advertisement_photo' => $request->get('advertisement_photo'),
+            'advertisement_photo' => $request->advertisement_photo->store('advertisement'),
             'cd_user' => auth()->user()->cd_user,
             'cd_category' => $request->get('cd_category'),
             'cd_advertisement_status' => $request->input('cd_advertisement_status',
