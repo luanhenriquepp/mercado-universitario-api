@@ -41,7 +41,6 @@ class AdvertisementController extends Controller
        return $this->service->publicPageAll();
     }
 
-
     /**
      * @param $id
      * @return Advertisement|Advertisement[]|Builder|Builder[]|Collection|Model|null
@@ -100,7 +99,7 @@ class AdvertisementController extends Controller
 
     /**
      * @param $id
-     * @return JsonResponse
+     * @return array
      */
     public function destroy($id)
     {

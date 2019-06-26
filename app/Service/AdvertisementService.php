@@ -54,6 +54,7 @@ class AdvertisementService
         $file->advertisement_photo->storeAs('public/'.$directory, $fileName);
         return $directory.$fileName;
     }
+
     /**
      * @param  $request
      * @return JsonResponse $advertisement
