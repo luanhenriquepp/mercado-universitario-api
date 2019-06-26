@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\City;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-
 class CityController extends Controller
 {
     /**

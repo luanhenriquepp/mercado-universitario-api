@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Address;
-use App\Constants\Constants;
-use App\Constants\Messages;
 use App\Http\Requests\RequestUser;
-use App\Profile;
 use App\Service\UserService;
-use App\University;
 use App\User;
-use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

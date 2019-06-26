@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryController extends Controller
 {
 
     /**
-     * @return Category[]|\Illuminate\Database\Eloquent\Collection
+     * @return Category[]|Collection
      */
     public function index()
     {
