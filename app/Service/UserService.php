@@ -91,28 +91,27 @@ class UserService
      */
     public function update($id, RequestUser $request)
     {
-        $user = User::with('universities', 'address', 'profile')->find($id);
-        $address = $user->address;
-        $address->public_place      = $request->input('public_place');
-        $address->number            = $request->input('number');
-        $address->complement        = $request->input('complement');
-        $address->neighborhood      = $request->input('neighborhood');
-        $address->cep               = $request->input('cep');
-        $address->cd_city           = $request->input('cd_city');
+        $user = $this->getById($id);
 
-        $university = $user->universities;
-        $university->university_name    = $request->input('university_name');
-        $university->semester           = $request->input('semester');
-        $university->course             = $request->input('course');
+        $user->address->public_place            = $request->input('public_place');
+        $user->address->number                  = $request->input('number');
+        $user->address->complement              = $request->input('complement');
+        $user->address->neighborhood            = $request->input('neighborhood');
+        $user->address->cep                     = $request->input('cep');
+        $user->address->cd_city                 = $request->input('cd_city');
 
-        $user->name                     = $request->input('name');
-        $user->birth                    = $request->input('birth');
-        $user->email                    = $request->input('email');
-        $user->phone_number             = $request->input('phone_number');
+        $user->universities->university_name    = $request->input('university_name');
+        $user->universities->semester           = $request->input('semester');
+        $user->universities->course             = $request->input('course');
+
+        $user->name                             = $request->input('name');
+        $user->birth                            = $request->input('birth');
+        $user->email                            = $request->input('email');
+        $user->phone_number                     = $request->input('phone_number');
         $idProfile = auth()->user()->cd_profile;
         $user->cd_profile               = $request->input('cd_profile',$idProfile);
 
-        if ($user->save() && $university->save() && $address->save()) {
+        if ($user->save() && $user->universities->save() && $user->address->save()) {
             return response()->json([
                 Constants::SUCCESS => true,
                 Constants::MESSAGE => Messages::MSG006
